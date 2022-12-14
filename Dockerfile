@@ -1,18 +1,21 @@
-FROM node:10-alpine
+FROM node:14-alpine3.12
 
-# Créer un répertoire pour l'application
-RUN mkdir -p /usr/src/app
+# Create app directory
 WORKDIR /usr/src/app
 
-# Installer les dépendances de l'application
-COPY package.json /usr/src/app/
+# Install app dependencies
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+# where available (npm@5+)
+# copying packages first helps take advantage of docker layers
+COPY package*.json ./
+
 RUN npm install
+# If you are building your code for production
+# RUN npm ci --only=production
 
-# Copier les fichiers de l'application dans le répertoire de travail
-COPY . /usr/src/app
+# Bundle app source
+COPY . .
 
-# Exposer le port 3000 pour que l'application puisse être accessible depuis l'extérieur
-EXPOSE 3000
+EXPOSE 8000
 
-# Lancer l'application avec la commande "npm start"
-CMD ["npm", "start"]
+CMD [ "npm", "run", "start" ]

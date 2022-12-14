@@ -1,1 +1,1 @@
-# MotoChat-Examen
+docker-compose up -d
