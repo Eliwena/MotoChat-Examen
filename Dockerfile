@@ -1,18 +1,17 @@
-FROM node:10-alpine
+# install node
+FROM node:alpine
 
-# Créer un répertoire pour l'application
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+# make the 'app' folder the current working directory
+WORKDIR /usr/app
 
-# Installer les dépendances de l'application
-COPY package.json /usr/src/app/
+# copy both 'package.json' and 'package-lock.json' (if available)
+COPY package*.json ./
+
+# install project dependencies
 RUN npm install
 
-# Copier les fichiers de l'application dans le répertoire de travail
-COPY . /usr/src/app
+# copy project files and folders to the current working directory (i.e. 'app' folder)
+COPY . .
 
-# Exposer le port 3000 pour que l'application puisse être accessible depuis l'extérieur
-EXPOSE 3000
-
-# Lancer l'application avec la commande "npm start"
-CMD ["npm", "start"]
+# serve application in development
+CMD [ "npm", "start" ]
