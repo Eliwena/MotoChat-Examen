@@ -1,15 +1,33 @@
-# Etape 1 
+## Récupération du projet
 
-docker-compose build
+```console
+> git clone https://github.com/Eliwena/MotoChat-Examen.git
+```
 
-# Etape 2
+## Lancement du back
 
-docker-compose up 
+```console
+> docker-compose buil
+```
 
-# Lancer le front 
+```console
+> docker-compose up -d
+```
 
-cd client 
-npm run build
-npm run serve 
+## Lancement du front
 
+```console
+> cd client
+```
 
+```console
+> npm install
+```
+
+```console
+> npm run build
+```
+
+```console
+> npm run serve
+```
