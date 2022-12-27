@@ -7,7 +7,7 @@
 ## Lancement du back
 
 ```console
-> docker-compose buil
+> docker-compose build
 ```
 
 ```console
