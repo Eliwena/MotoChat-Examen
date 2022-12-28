@@ -44,5 +44,6 @@ const Op = db.Sequelize.Op;
   
 }
 
+
 module.exports = { create, findAll, findOne, update, deleteAll };
 

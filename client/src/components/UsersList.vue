@@ -33,6 +33,6 @@ export default {
 <template>
     <h1>UserList</h1>
     <div class="list-unstyled" v-for="user in users" :key="user._id">
-        <p>{{ user.pseudo }}</p>
+        <p>{{ user.username }}</p>
     </div>
 </template>

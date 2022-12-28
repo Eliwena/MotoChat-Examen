@@ -1,6 +1,18 @@
-<script setup>
+<script>
 
 import NavBar from './components/NavBar.vue'
+
+export default {
+  computed: {
+    currentUser() {
+      return this.$store.state.auth.user;
+    },
+  },
+  components: {
+    NavBar
+  }
+}
+
 // import { onMounted ,ref , computed} from 'vue';
 // import AboutViews from './views/About.vue'
 // const API_URL = "http://localhost:8000";
@@ -88,7 +100,7 @@ import NavBar from './components/NavBar.vue'
 }
 
 body {
-  background: #272727;
+  background: #272727 !important;
   font-family: "Montserrat", sans-serif;
 }
 </style>

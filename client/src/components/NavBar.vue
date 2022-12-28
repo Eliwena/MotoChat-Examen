@@ -1,14 +1,50 @@
-<script setup>
+<script>
+
+export default {
+  computed: {
+    currentUser() {
+      return this.$store.state.auth.user;
+    },
+    showAdminBoard() {
+      console.log(this.currentUser)
+      if (this.currentUser && this.currentUser.roles) {
+        return this.currentUser.roles.includes('ROLE_ADMIN');
+      }
+      return false;
+    },
+  },
+  methods: {
+    logOut() {
+      this.$store.dispatch('auth/logout');
+      this.$router.push('/login');
+    }
+  }
+};
 
 </script>
 
 <template>
   <div>
     <nav class="navMenu">
-      <router-link to="/home" class="navbar-brand">Home</router-link>
-      <router-link to="/users" class="nav-link">Users</router-link>
-      <!-- <router-link to="/add" class="nav-link">Add</router-link>
-      <router-link to="/about" class="nav-link">About</router-link> -->
+      <router-link to="/home" class="nav-link">
+        Home
+      </router-link>
+      <router-link v-if="showAdminBoard" to="/admin" class="nav-link">Admin</router-link>
+
+      <router-link v-if="currentUser" to="/user" class="nav-link">User</router-link>
+
+
+      <router-link v-if="!currentUser" to="/register" class="nav-link">
+        Sign Up
+      </router-link>
+
+
+      <router-link v-if="!currentUser" to="/login" class="nav-link">
+        Login
+      </router-link>
+      <a v-if="currentUser" class="nav-link" href @click.prevent="logOut">
+        LogOut
+      </a>
       <div class="dot"></div>
     </nav>
   </div>
@@ -53,7 +89,7 @@
   transition: all 0.2s ease-in-out;
 }
 
-.navMenu a:nth-child(1):hover ~ .dot {
+.navMenu a:nth-child(1):hover~.dot {
   -webkit-transform: translateX(30px);
   transform: translateX(30px);
   -webkit-transition: all 0.2s ease-in-out;
@@ -61,7 +97,7 @@
   opacity: 1;
 }
 
-.navMenu a:nth-child(2):hover ~ .dot {
+.navMenu a:nth-child(2):hover~.dot {
   -webkit-transform: translateX(110px);
   transform: translateX(110px);
   -webkit-transition: all 0.2s ease-in-out;
@@ -69,7 +105,7 @@
   opacity: 1;
 }
 
-.navMenu a:nth-child(3):hover ~ .dot {
+.navMenu a:nth-child(3):hover~.dot {
   -webkit-transform: translateX(200px);
   transform: translateX(200px);
   -webkit-transition: all 0.2s ease-in-out;
@@ -77,12 +113,11 @@
   opacity: 1;
 }
 
-.navMenu a:nth-child(4):hover ~ .dot {
+.navMenu a:nth-child(4):hover~.dot {
   -webkit-transform: translateX(285px);
   transform: translateX(285px);
   -webkit-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
   opacity: 1;
 }
-
 </style>
