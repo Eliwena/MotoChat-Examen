@@ -30,8 +30,8 @@ export default {
         Home
       </router-link>
       <router-link v-if="showAdminBoard" to="/admin" class="nav-link">Admin</router-link>
-
-      <router-link v-if="currentUser" to="/user" class="nav-link">User</router-link>
+      <router-link v-if="showAdminBoard" to="/admin/users" class="nav-link">Gestion User</router-link>
+      <!-- <router-link v-if="currentUser" to="/user" class="nav-link">User</router-link> -->
 
 
       <router-link v-if="!currentUser" to="/register" class="nav-link">
@@ -54,11 +54,9 @@ export default {
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
 
 .navMenu {
-  position: absolute;
-  top: 5%;
-  left: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
+  /* position: absolute; */
+  margin: auto;
+  padding: 1%;
 }
 
 .navMenu a {
@@ -68,7 +66,8 @@ export default {
   text-transform: uppercase;
   font-weight: 500;
   display: inline-block;
-  width: 80px;
+  /* width: 100px; */
+  margin-right: 2%;
   -webkit-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
 }
@@ -77,47 +76,6 @@ export default {
   color: #fddb3a;
 }
 
-.navMenu .dot {
-  width: 6px;
-  height: 6px;
-  background: #fddb3a;
-  border-radius: 50%;
-  opacity: 0;
-  -webkit-transform: translateX(30px);
-  transform: translateX(30px);
-  -webkit-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
-}
 
-.navMenu a:nth-child(1):hover~.dot {
-  -webkit-transform: translateX(30px);
-  transform: translateX(30px);
-  -webkit-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
-  opacity: 1;
-}
 
-.navMenu a:nth-child(2):hover~.dot {
-  -webkit-transform: translateX(110px);
-  transform: translateX(110px);
-  -webkit-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
-  opacity: 1;
-}
-
-.navMenu a:nth-child(3):hover~.dot {
-  -webkit-transform: translateX(200px);
-  transform: translateX(200px);
-  -webkit-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
-  opacity: 1;
-}
-
-.navMenu a:nth-child(4):hover~.dot {
-  -webkit-transform: translateX(285px);
-  transform: translateX(285px);
-  -webkit-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
-  opacity: 1;
-}
 </style>

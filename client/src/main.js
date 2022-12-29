@@ -27,10 +27,21 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-        path: "/users",
+      path: '/admin',
+      name: 'admin',
+      // lazy-loaded
+      component: () => import('./views/BoardAdmin.vue')
+    },
+    {
+        path: "/admin/users",
         alias: "/users",
         name: "users",
         component: () => import("./components/UsersList")
+      },
+      {
+        path: "/admin/users/:id",
+        name: "users-details",
+        component: () => import("./components/User")
       },
       {
         path: '/',
@@ -49,12 +60,7 @@ const router = createRouter({
         path: '/register',
         component: Register
       },
-      {
-        path: '/admin',
-        name: 'admin',
-        // lazy-loaded
-        component: () => import('./views/BoardAdmin.vue')
-      },
+      
   ],
 })
 

@@ -3,9 +3,7 @@ module.exports = app => {
 
     var router = require("express").Router();
 
-    // Create a new Tutorial
-    router.post("/", users.create);
-
+    
     // Retrieve all Tutorials
     router.get("/", users.findAll);
 
@@ -16,11 +14,11 @@ module.exports = app => {
     router.put("/:id", users.update);
 
     // Delete a Tutorial with id
-    // router.delete("/:id", users.delete);
+    router.delete("/:id", users._delete);
 
     // Create a new Tutorial
-    router.delete("/", users.deleteAll);
+    // router.delete("/", users.deleteAll);
 
-    app.use('/users', router);
+    app.use('/admin/users', router);
   };
 

@@ -2,7 +2,9 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const db = require("./app/models");
+const { role } = require("./app/models");
 const Role = db.role;
+const User = db.users;
 const app = express();
 
 var corsOptions = {
@@ -46,7 +48,6 @@ function initial() {
     id: 1,
     name: "user"
   });
-
   Role.create({
     id: 2,
     name: "admin"
