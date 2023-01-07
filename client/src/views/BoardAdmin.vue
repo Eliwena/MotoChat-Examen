@@ -1,10 +1,7 @@
 <script>
 import UserService from '../services/User.service';
-import UserList from '../components/UsersList.vue';
 export default {
-  components: {
-    UserList
-  },
+
   name: 'User',
   data() {
     return {
@@ -31,7 +28,7 @@ export default {
   <div class="container">
     <header class="jumbotron">
       <h3>{{ content }}</h3>
-      <UserList></UserList>
+      <!-- <UserList></UserList> -->
     </header>
   </div>
 </template>

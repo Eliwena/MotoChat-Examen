@@ -33,6 +33,11 @@ export default {
       <router-link v-if="showAdminBoard" to="/admin/users" class="nav-link">Gestion User</router-link>
       <!-- <router-link v-if="currentUser" to="/user" class="nav-link">User</router-link> -->
 
+      <router-link v-if="currentUser && !showAdminBoard" to="/message" class="nav-link">Message
+      </router-link>
+      <router-link v-if="showAdminBoard" to="/admin/message" class="nav-link">Message
+      </router-link>
+
 
       <router-link v-if="!currentUser" to="/register" class="nav-link">
         Sign Up
@@ -75,7 +80,4 @@ export default {
 .navMenu a:hover {
   color: #fddb3a;
 }
-
-
-
 </style>
