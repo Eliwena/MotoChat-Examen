@@ -8,7 +8,8 @@ const User = db.users;
 const app = express();
 
 var corsOptions = {
-  origin: "http://localhost:8080",
+  // origin: "http://localhost:8080/",
+  // AccessControlAllowOrigin : 'origin'
 };
 
 app.use(cors(corsOptions));
