@@ -6,9 +6,9 @@ const Op = db.Sequelize.Op;
 
 // Retrieve all user from the database.
 function findAll(req, res) {
-  const name = req.query.name;
-  var condition = name ? { name: { [Op.iLike]: `%${name}%` } } : null;
-  User.findAll({ where: condition })
+  const username = req.query.username;
+  var condition = username ? { username: { [Op.iLike]: `%${username}%` } } : null;
+  User.findAll({ where: condition})
     .then(data => {
       res.send(data);
     })
@@ -103,6 +103,7 @@ function findAllActive(req, res) {
       });
     });
 };
+
 
 module.exports = {  findAll, findOne, update, _delete, findAllActive };
 

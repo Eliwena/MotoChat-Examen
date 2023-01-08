@@ -57,17 +57,17 @@ export default {
       this.currentIndex = -1;
     },
 
-    setActiveUser(user, index) {
+    setActiveUsername(user, index) {
       this.currentUser = user;
       this.currentIndex = user ? index : -1;
     },
 
     searchUsername() {
-      UserDataService.findOne(this.username)
+      UserDataService.findByUsername(this.username)
         .then(response => {
+          console.log(response.data);
           this.users = response.data;
           this.setActiveUsername(null);
-          console.log(response.data);
         })
         .catch(e => {
           console.log(e);
@@ -107,7 +107,7 @@ export default {
                   <h4>User List</h4>
                   <ul class="list-group">
                     <li class="list-group-item" :class="{ active: index == currentIndex }"
-                      v-for="(user, index) in users" :key="index" @click="setActiveUser(user, index)">
+                      v-for="(user, index) in users" :key="index" @click="setActiveUsername(user, index)">
                       {{ user.username }}
                     </li>
                   </ul>
@@ -129,7 +129,7 @@ export default {
                   </div>
                   <div v-else>
                     <br />
-                    <p>Please click on a Tutorial...</p>
+                    <p>Selectionner un utilisateur...</p>
                   </div>
                 </div>
               </div>
