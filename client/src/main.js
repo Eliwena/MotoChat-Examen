@@ -30,13 +30,25 @@ const router = createRouter({
       path: '/admin',
       name: 'admin',
       // lazy-loaded
-      component: () => import('./views/BoardAdmin.vue')
+      component: () => import('./views/BoardAdmin')
     },
     {
         path: "/admin/users",
         alias: "/users",
         name: "users",
-        component: () => import("./components/UsersList")
+        component: () => import("./views/UsersList")
+      },
+      {
+        path: "/admin/salon",
+        alias: "/salons",
+        name: "salon",
+        component: () => import("./views/SalonList")
+      },
+      {
+        path: "/admin/salon/add",
+        alias: "/salon/add",
+        name: "salon_add",
+        component: () => import("./views/AddSalon")
       },
       {
         path: "/admin/roles",
@@ -47,6 +59,11 @@ const router = createRouter({
         path: "/admin/users/:id",
         name: "users-details",
         component: () => import("./components/User")
+      },
+      {
+        path: "/admin/salon/:id",
+        name: "salon-details",
+        component: () => import("./views/SalonEdit")
       },
       {
         path: '/',

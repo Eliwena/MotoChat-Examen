@@ -37,6 +37,9 @@ export default {
       </router-link>
       <router-link v-if="showAdminBoard" to="/admin/message" class="nav-link">Message
       </router-link>
+      <router-link v-if="showAdminBoard" to="/admin/salon" class="nav-link">Gestion Salon
+      </router-link>
+
 
 
       <router-link v-if="!currentUser" to="/register" class="nav-link">
