@@ -13,6 +13,10 @@ class UserDataService {
     return http.put(`/admin/users/${id}`, data);
   }
 
+  updateRole(id, data) {
+    return http.put(`/admin/users/${id}/role`, data);
+  }
+
   delete(id) {
     return http.delete(`/admin/users/${id}`);
   }

@@ -32,6 +32,7 @@ app.get("/", (req, res) => {
 require('./app/routes/auth.routes')(app);
 require("./app/routes/userAcces.routes")(app);
 require("./app/routes/user.routes")(app);
+require("./app/routes/role.routes")(app);
 
 // app.get("/:universalURL", (req, res) => {
 //   res.send("404 URL NOT FOUND");

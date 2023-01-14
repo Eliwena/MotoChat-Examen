@@ -26,12 +26,12 @@ db.message = require("../models/message.model.js")(sequelize, Sequelize);
 db.role.belongsToMany(db.users, {
   through: "user_roles",
   foreignKey: "roleId",
-  otherKey: "userId"
+  as: "users",
 });
 db.users.belongsToMany(db.role, {
   through: "user_roles",
   foreignKey: "userId",
-  otherKey: "roleId"
+  as: "roles",
 });
 
 

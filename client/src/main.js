@@ -39,6 +39,11 @@ const router = createRouter({
         component: () => import("./components/UsersList")
       },
       {
+        path: "/admin/roles",
+        alias: "/roles",
+        name: "roles",
+      },
+      {
         path: "/admin/users/:id",
         name: "users-details",
         component: () => import("./components/User")

@@ -1,11 +1,13 @@
 <script>
 import UserDataService from "../services/UserDataService";
+import RoleDataService from "../services/RoleDataService";
 
 export default {
     name: "user",
     data() {
         return {
             currentUser: null,
+            roles: [],
             message: ''
         };
     },
@@ -14,6 +16,17 @@ export default {
             UserDataService.get(id)
                 .then(response => {
                     this.currentUser = response.data;
+                    console.log(response.data);
+                })
+                .catch(e => {
+                    console.log(e);
+                });
+        },
+
+        getRoles() {
+            RoleDataService.getAll()
+                .then(response => {
+                    this.roles = response.data;
                     console.log(response.data);
                 })
                 .catch(e => {
@@ -49,6 +62,15 @@ export default {
                 .catch(e => {
                     console.log(e);
                 });
+            console.log(this.currentUser.roles);
+            UserDataService.updateRole(this.currentUser.id, this.currentUser.roles)
+                .then(response => {
+                    console.log(response.data);
+                    this.message = 'The user was updated successfully!';
+                })
+                .catch(e => {
+                    console.log(e);
+                });
         },
 
         deleteUser() {
@@ -65,11 +87,12 @@ export default {
     mounted() {
         this.message = '';
         this.getUser(this.$route.params.id);
+        this.getRoles();
     }
 };
 </script>
-  
-  
+
+
 <template>
     <div class="container py-5">
         <div class="row d-flex justify-content-center align-items-center">
@@ -97,6 +120,17 @@ export default {
 
                                     <div class="form-outline form-white mt-4">
                                         <div class="form-group">
+                                            <h5>Role</h5><br>
+                                            <div v-for="role in roles" :key="role.id">
+                                                <label>{{ role.name }}</label>
+                                                <input  type="checkbox"
+                                                    v-model="currentUser.roles" :value="role" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-outline form-white mt-4">
+                                        <div class="form-group">
                                             <div class="form-group">
                                                 <label for="statut">Statut : </label>
                                                 {{ currentUser.statut ? "Active" : "Non Active" }}
@@ -114,12 +148,12 @@ export default {
 
 
                                     <!-- <button class=" badge badge-primary mr-2" v-if="currentUser.statut"
-                                        @click="updateStatut(false)">
-                                        Non Active
-                                    </button>
-                                    <button v-else class="badge badge-primary mr-2" @click="updateStatut(true)">
-                                        Active
-                                    </button> -->
+                                      @click="updateStatut(false)">
+                                      Non Active
+                                  </button>
+                                  <button v-else class="badge badge-primary mr-2" @click="updateStatut(true)">
+                                      Active
+                                  </button> -->
 
                                     <button class=" btn-delete badge badge-danger mr-2" @click="deleteUser">
                                         Delete
@@ -142,9 +176,9 @@ export default {
         </div>
     </div>
 </template>
-  
-  
-  
+
+
+
 <style scoped>
 .edit-form {
     max-width: 50%;
@@ -263,4 +297,3 @@ export default {
     top: 2px;
 }
 </style>
-  
