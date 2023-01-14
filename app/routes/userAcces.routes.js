@@ -10,16 +10,16 @@ module.exports = function(app) {
     next();
   });
 
-  app.get("/test/all", controller.allAccess);
+  app.get("/moto/all", controller.allAccess);
 
   app.get(
-    "/test/user",
+    "/moto/user",
     [authJwt.verifyToken],
     controller.userBoard
   );
 
   app.get(
-    "/test/admin",
+    "/moto/admin",
     [authJwt.verifyToken, authJwt.isAdmin],
     controller.adminBoard
   );

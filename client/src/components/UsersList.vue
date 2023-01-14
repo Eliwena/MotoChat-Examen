@@ -1,39 +1,12 @@
 <script>
 import UserDataService from "../services/UserDataService";
 console.log(UserDataService)
-// export default {
-//   name: "users-list",
-//   data() {
-//     return {
-//       users: [],
-//       currentUser: null,
-//       currentIndex: -1,
-//       title: ""
-//     };
-//   },
-
-//   methods: {
-//     retrieveUsers() {
-//       UserDataService.getAll()
-//         .then(response => {
-//           this.users = response.data;
-//           console.log(response.data);
-//         })
-//         .catch(e => {
-//           console.log(e);
-//         });
-//     },
-// },
-//     mounted() {
-//     this.retrieveUsers();
-//   }
-// };
-
 export default {
   name: "users-list",
   data() {
     return {
       users: [],
+      role:[],
       currentUser: null,
       currentIndex: -1,
       username: ""
@@ -57,17 +30,17 @@ export default {
       this.currentIndex = -1;
     },
 
-    setActiveUser(user, index) {
+    setActiveUsername(user, index) {
       this.currentUser = user;
       this.currentIndex = user ? index : -1;
     },
 
     searchUsername() {
-      UserDataService.findOne(this.username)
+      UserDataService.findByUsername(this.username)
         .then(response => {
+          console.log(response.data);
           this.users = response.data;
           this.setActiveUsername(null);
-          console.log(response.data);
         })
         .catch(e => {
           console.log(e);
@@ -81,10 +54,6 @@ export default {
 </script>
 
 <template>
-  <!-- <h1>UserList</h1>
-    <div class="list-unstyled" v-for="user in users" :key="user._id">
-        <p>{{ user.username }}</p>
-    </div> -->
   <div class="container py-5">
     <div class="row d-flex justify-content-center align-items-center">
       <div class="col-12 ">
@@ -107,7 +76,7 @@ export default {
                   <h4>User List</h4>
                   <ul class="list-group">
                     <li class="list-group-item" :class="{ active: index == currentIndex }"
-                      v-for="(user, index) in users" :key="index" @click="setActiveUser(user, index)">
+                      v-for="(user, index) in users" :key="index" @click="setActiveUsername(user, index)">
                       {{ user.username }}
                     </li>
                   </ul>
@@ -118,6 +87,8 @@ export default {
                     <div>
                       <label><strong>User:</strong></label> {{ currentUser.username }}
                     </div>
+                    <label><strong>Roles:</strong></label> <span v-for="(role,index) in currentUser.roles" :key="index"> [ {{ role.name }} ] </span>
+
                     <div>
                       <label><strong>Email:</strong></label> {{ currentUser.email }}
                     </div>
@@ -129,7 +100,7 @@ export default {
                   </div>
                   <div v-else>
                     <br />
-                    <p>Please click on a Tutorial...</p>
+                    <p>Selectionner un utilisateur...</p>
                   </div>
                 </div>
               </div>

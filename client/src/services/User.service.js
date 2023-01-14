@@ -1,7 +1,7 @@
 import http from "../http-common";
 import authHeader from './Auth-header';
 
-const API_URL = 'test/';
+const API_URL = 'moto/';
 
 class UserService {
   getPublicContent() {

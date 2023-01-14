@@ -13,8 +13,11 @@ module.exports = app => {
     // Update a Tutorial with id
     router.put("/:id", users.update);
 
+    router.put("/:id/role", users.addRole);
+
     // Delete a Tutorial with id
     router.delete("/:id", users._delete);
+
 
     // Create a new Tutorial
     // router.delete("/", users.deleteAll);
