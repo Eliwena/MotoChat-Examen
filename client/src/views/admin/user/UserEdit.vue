@@ -1,6 +1,6 @@
 <script>
-import UserDataService from "../services/UserDataService";
-import RoleDataService from "../services/RoleDataService";
+import UserDataService from "../../../services/admin/UserDataService";
+import RoleDataService from "../../../services/admin/RoleDataService";
 
 export default {
     name: "user",
@@ -57,20 +57,20 @@ export default {
             UserDataService.update(this.currentUser.id, this.currentUser)
                 .then(response => {
                     console.log(response.data);
-                    this.message = 'The user was updated successfully!';
+                    UserDataService.updateRole(this.currentUser.id, this.currentUser.roles)
+                        .then(response => {
+                            console.log(response.data);
+                            this.$router.push( "/admin/users" );
+                        })
+                        .catch(e => {
+                            console.log(e);
+                        });
                 })
                 .catch(e => {
                     console.log(e);
                 });
             console.log(this.currentUser.roles);
-            UserDataService.updateRole(this.currentUser.id, this.currentUser.roles)
-                .then(response => {
-                    console.log(response.data);
-                    this.message = 'The user was updated successfully!';
-                })
-                .catch(e => {
-                    console.log(e);
-                });
+
         },
 
         deleteUser() {
@@ -123,8 +123,7 @@ export default {
                                             <h5>Role</h5><br>
                                             <div v-for="role in roles" :key="role.id">
                                                 <label>{{ role.name }}</label>
-                                                <input  type="checkbox"
-                                                    v-model="currentUser.roles" :value="role" />
+                                                <input type="checkbox" v-model="currentUser.roles" :value="role" />
                                             </div>
                                         </div>
                                     </div>

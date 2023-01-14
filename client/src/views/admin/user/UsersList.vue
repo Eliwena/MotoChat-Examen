@@ -1,5 +1,5 @@
 <script>
-import UserDataService from "../services/UserDataService";
+import UserDataService from "../../../services/admin/UserDataService";
 console.log(UserDataService)
 export default {
   name: "users-list",

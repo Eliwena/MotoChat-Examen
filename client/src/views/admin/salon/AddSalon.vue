@@ -1,5 +1,5 @@
 <script>
-import SalonDataService from "../services/SalonDataService";
+import SalonDataService from "../../../services/admin/SalonDataService";
 
 export default {
     name: "salon-add",

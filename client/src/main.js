@@ -36,34 +36,34 @@ const router = createRouter({
         path: "/admin/users",
         alias: "/users",
         name: "users",
-        component: () => import("./views/UsersList")
+        component: () => import("./views/admin/user/UsersList")
+      },
+      {
+        path: "/admin/users/:id",
+        name: "users-details",
+        component: () => import("./views/admin/user/UserEdit")
       },
       {
         path: "/admin/salon",
         alias: "/salons",
         name: "salon",
-        component: () => import("./views/SalonList")
+        component: () => import("./views/admin/salon/SalonList")
       },
       {
         path: "/admin/salon/add",
         alias: "/salon/add",
         name: "salon_add",
-        component: () => import("./views/AddSalon")
+        component: () => import("./views/admin/salon/AddSalon")
+      },
+      {
+        path: "/admin/salon/:id",
+        name: "salon-details",
+        component: () => import("./views/admin/salon/SalonEdit")
       },
       {
         path: "/admin/roles",
         alias: "/roles",
         name: "roles",
-      },
-      {
-        path: "/admin/users/:id",
-        name: "users-details",
-        component: () => import("./components/User")
-      },
-      {
-        path: "/admin/salon/:id",
-        name: "salon-details",
-        component: () => import("./views/SalonEdit")
       },
       {
         path: '/',

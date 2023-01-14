@@ -1,5 +1,5 @@
 <script>
-import SalonDataService from "../services/SalonDataService";
+import SalonDataService from "../../../services/admin/SalonDataService";
 
 export default {
     name: "user",
@@ -20,26 +20,6 @@ export default {
                     console.log(e);
                 });
         },
-
-
-        // updateStatut(status) {
-        //     var data = {
-        //         id: this.currentSalon.id,
-        //         username: this.currentSalon.username,
-        //         email: this.currentSalon.email,
-        //         statut: status
-        //     };
-
-        //     SalonDataService.update(this.currentSalon.id, data)
-        //         .then(response => {
-        //             console.log(response.data);
-        //             this.currentSalon.statut = status;
-        //             this.message = 'The status was updated successfully!';
-        //         })
-        //         .catch(e => {
-        //             console.log(e);
-        //         });
-        // },
 
         updateSalon() {
             SalonDataService.update(this.currentSalon.id, this.currentSalon)

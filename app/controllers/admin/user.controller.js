@@ -1,6 +1,6 @@
 // import { db } from "../models";
-const { role } = require("../models");
-const db = require("../models");
+const { role } = require("../../models");
+const db = require("../../models");
 const User = db.users;
 const Op = db.Sequelize.Op;
 const Role = db.role;
