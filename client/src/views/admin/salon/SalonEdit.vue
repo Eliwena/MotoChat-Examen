@@ -1,5 +1,5 @@
 <script>
-import SalonDataService from "../../../services/admin/SalonDataService";
+import AdminSalonDataService from "../../../services/admin/AdminSalonDataService";
 
 export default {
     name: "user",
@@ -11,7 +11,7 @@ export default {
     },
     methods: {
         getSalon(id) {
-            SalonDataService.get(id)
+            AdminSalonDataService.get(id)
                 .then(response => {
                     this.currentSalon = response.data;
                     console.log(response.data);
@@ -22,7 +22,7 @@ export default {
         },
 
         updateSalon() {
-            SalonDataService.update(this.currentSalon.id, this.currentSalon)
+            AdminSalonDataService.update(this.currentSalon.id, this.currentSalon)
                 .then(response => {
                     console.log(response.data);
                     // this.message = 'The salon was updated successfully!';
@@ -37,7 +37,7 @@ export default {
         },
 
         deleteSalon() {
-            SalonDataService.delete(this.currentSalon.id)
+            AdminSalonDataService.delete(this.currentSalon.id)
                 .then(response => {
                     console.log(response.data);
                     this.$router.push( "/admin/salon" );

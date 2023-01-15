@@ -1,5 +1,5 @@
 <script>
-import SalonDataService from "../../../services/admin/SalonDataService";
+import AdminSalonDataService from "../../../services/admin/AdminSalonDataService";
 export default {
   name: "salon-list",
   data() {
@@ -12,7 +12,7 @@ export default {
   },
   methods: {
     retrieveSalons() {
-      SalonDataService.getAll()
+      AdminSalonDataService.getAll()
         .then(response => {
           this.salons = response.data;
           console.log(response.data);
@@ -34,7 +34,7 @@ export default {
     },
 
     deleteSalon() {
-      SalonDataService.delete(this.currentSalon.id)
+      AdminSalonDataService.delete(this.currentSalon.id)
         .then(response => {
           console.log(response.data);
           this.$router.reload()
@@ -45,7 +45,7 @@ export default {
     },
 
     searchName() {
-      SalonDataService.findByName(this.name)
+      AdminSalonDataService.findByName(this.name)
         .then(response => {
           console.log(response.data);
           this.salons = response.data;
@@ -69,7 +69,7 @@ export default {
         <div class="card bg-dark text-white" style="border-radius: 1rem;">
           <div class="card-body p-5 text-center">
             <div class="mb-md-5 mt-md-4 pb-5">
-              <h5 class="fw-bold mb-2 text-uppercase">Liste des Salons</h5>
+              <h5 class="fw-bold mb-1 text-uppercase">Liste des Salons</h5>
               <div class="d-flex justify-content-end">
                 <router-link to="/admin/salon/add" class=" btn-add ">Ajouter un salon</router-link>
               </div>
@@ -179,7 +179,6 @@ export default {
   opacity: 1;
   outline: 0 solid transparent;
   padding: 8px 18px;
-  margin-top: 3%;
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;

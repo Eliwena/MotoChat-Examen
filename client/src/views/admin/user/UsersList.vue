@@ -73,7 +73,6 @@ export default {
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <h4>User List</h4>
                   <ul class="list-group">
                     <li class="list-group-item" :class="{ active: index == currentIndex }"
                       v-for="(user, index) in users" :key="index" @click="setActiveUsername(user, index)">

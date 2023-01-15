@@ -61,6 +61,11 @@ const router = createRouter({
         component: () => import("./views/admin/salon/SalonEdit")
       },
       {
+        path: "/salon",
+        name: "salons",
+        component: () => import("./views/salon/Salon")
+      },
+      {
         path: "/admin/roles",
         alias: "/roles",
         name: "roles",

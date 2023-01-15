@@ -32,6 +32,8 @@ require("./app/routes/userAcces.routes")(app);
 require("./app/routes/admin/user.routes")(app);
 require("./app/routes/admin/role.routes")(app);
 require("./app/routes/admin/salon.routes")(app);
+require("./app/routes/salon.routes")(app);
+
 // app.get("/:universalURL", (req, res) => {
 //   res.send("404 URL NOT FOUND");
 // });

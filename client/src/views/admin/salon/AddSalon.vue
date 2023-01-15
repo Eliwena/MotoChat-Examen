@@ -1,5 +1,5 @@
 <script>
-import SalonDataService from "../../../services/admin/SalonDataService";
+import AdminSalonDataService from "../../../services/admin/AdminSalonDataService";
 
 export default {
     name: "salon-add",
@@ -28,7 +28,7 @@ export default {
                 createdBy : this.currentUser.id
             };
 
-            SalonDataService.create(data)
+            AdminSalonDataService.create(data)
                 .then(response => {
                     this.salon.id = response.data.id;
                     console.log(response.data);

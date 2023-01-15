@@ -1,6 +1,6 @@
 import http from "../../http-common";
 
-class SalonDataService {
+class AdminSalonDataService {
   getAll() {
     return http.get("/admin/salon");
   }
@@ -26,4 +26,4 @@ class SalonDataService {
   }
 }
 
-export default new SalonDataService();
+export default new AdminSalonDataService();

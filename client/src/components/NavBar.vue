@@ -35,12 +35,18 @@ export default {
 
       <router-link v-if="currentUser && !showAdminBoard" to="/message" class="nav-link">Message
       </router-link>
-      <router-link v-if="showAdminBoard" to="/admin/message" class="nav-link">Message
+
+      <router-link v-if="currentUser && !showAdminBoard" to="/salon" class="nav-link">Salon
       </router-link>
+
       <router-link v-if="showAdminBoard" to="/admin/salon" class="nav-link">Gestion Salon
       </router-link>
 
+      <router-link v-if="showAdminBoard" to="/salon" class="nav-link">Salon
+      </router-link>
 
+      <router-link v-if="showAdminBoard" to="/admin/message" class="nav-link">Message
+      </router-link>
 
       <router-link v-if="!currentUser" to="/register" class="nav-link">
         Sign Up
