@@ -17,7 +17,7 @@ import {
 import Home from './views/Home.vue';
 import Login from './views/Login.vue';
 import Register from './views/Register.vue';
-
+import { moment } from 'vue-moment'
 library.add(faHome, faUser, faUserPlus, faSignInAlt, faSignOutAlt);
 
 // Vue.config.productionTip = false;
@@ -95,6 +95,7 @@ const app = createApp(App)
 
 app.use(router)
 app.use(store)
+app.use(moment)
 // app.use(VeeValidate)
 app.component('font-awesome-icon', FontAwesomeIcon)
 
