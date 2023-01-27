@@ -17,7 +17,7 @@ import {
 import Home from './views/Home.vue';
 import Login from './views/Login.vue';
 import Register from './views/Register.vue';
-
+import { moment } from 'vue-moment'
 library.add(faHome, faUser, faUserPlus, faSignInAlt, faSignOutAlt);
 
 // Vue.config.productionTip = false;
@@ -30,23 +30,45 @@ const router = createRouter({
       path: '/admin',
       name: 'admin',
       // lazy-loaded
-      component: () => import('./views/BoardAdmin.vue')
+      component: () => import('./views/BoardAdmin')
     },
     {
         path: "/admin/users",
         alias: "/users",
         name: "users",
-        component: () => import("./components/UsersList")
+        component: () => import("./views/admin/user/UsersList")
+      },
+      {
+        path: "/admin/users/:id",
+        name: "users-details",
+        component: () => import("./views/admin/user/UserEdit")
+      },
+      {
+        path: "/admin/salon",
+        alias: "/salons",
+        name: "salon",
+        component: () => import("./views/admin/salon/SalonList")
+      },
+      {
+        path: "/admin/salon/add",
+        alias: "/salon/add",
+        name: "salon_add",
+        component: () => import("./views/admin/salon/AddSalon")
+      },
+      {
+        path: "/admin/salon/:id",
+        name: "salon-details",
+        component: () => import("./views/admin/salon/SalonEdit")
+      },
+      {
+        path: "/salon",
+        name: "salons",
+        component: () => import("./views/salon/Salon")
       },
       {
         path: "/admin/roles",
         alias: "/roles",
         name: "roles",
-      },
-      {
-        path: "/admin/users/:id",
-        name: "users-details",
-        component: () => import("./components/User")
       },
       {
         path: '/',
@@ -73,6 +95,7 @@ const app = createApp(App)
 
 app.use(router)
 app.use(store)
+app.use(moment)
 // app.use(VeeValidate)
 app.component('font-awesome-icon', FontAwesomeIcon)
 

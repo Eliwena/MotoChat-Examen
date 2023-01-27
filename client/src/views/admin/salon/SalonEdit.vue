@@ -1,21 +1,19 @@
 <script>
-import UserDataService from "../services/UserDataService";
-import RoleDataService from "../services/RoleDataService";
+import AdminSalonDataService from "../../../services/admin/AdminSalonDataService";
 
 export default {
     name: "user",
     data() {
         return {
-            currentUser: null,
-            roles: [],
+            currentSalon: null,
             message: ''
         };
     },
     methods: {
-        getUser(id) {
-            UserDataService.get(id)
+        getSalon(id) {
+            AdminSalonDataService.get(id)
                 .then(response => {
-                    this.currentUser = response.data;
+                    this.currentSalon = response.data;
                     console.log(response.data);
                 })
                 .catch(e => {
@@ -23,61 +21,27 @@ export default {
                 });
         },
 
-        getRoles() {
-            RoleDataService.getAll()
+        updateSalon() {
+            AdminSalonDataService.update(this.currentSalon.id, this.currentSalon)
                 .then(response => {
-                    this.roles = response.data;
                     console.log(response.data);
+                    // this.message = 'The salon was updated successfully!';
+                    this.$router.push( "/admin/salon" );
+
                 })
                 .catch(e => {
                     console.log(e);
                 });
+            console.log(this.currentSalon.roles);
+            
         },
 
-        updateStatut(status) {
-            var data = {
-                id: this.currentUser.id,
-                username: this.currentUser.username,
-                email: this.currentUser.email,
-                statut: status
-            };
+        deleteSalon() {
+            AdminSalonDataService.delete(this.currentSalon.id)
+                .then(response => {
+                    console.log(response.data);
+                    this.$router.push( "/admin/salon" );
 
-            UserDataService.update(this.currentUser.id, data)
-                .then(response => {
-                    console.log(response.data);
-                    this.currentUser.statut = status;
-                    this.message = 'The status was updated successfully!';
-                })
-                .catch(e => {
-                    console.log(e);
-                });
-        },
-
-        updateUser() {
-            UserDataService.update(this.currentUser.id, this.currentUser)
-                .then(response => {
-                    console.log(response.data);
-                    this.message = 'The user was updated successfully!';
-                })
-                .catch(e => {
-                    console.log(e);
-                });
-            console.log(this.currentUser.roles);
-            UserDataService.updateRole(this.currentUser.id, this.currentUser.roles)
-                .then(response => {
-                    console.log(response.data);
-                    this.message = 'The user was updated successfully!';
-                })
-                .catch(e => {
-                    console.log(e);
-                });
-        },
-
-        deleteUser() {
-            UserDataService.delete(this.currentUser.id)
-                .then(response => {
-                    console.log(response.data);
-                    this.$router.push({ name: "users" });
                 })
                 .catch(e => {
                     console.log(e);
@@ -86,8 +50,7 @@ export default {
     },
     mounted() {
         this.message = '';
-        this.getUser(this.$route.params.id);
-        this.getRoles();
+        this.getSalon(this.$route.params.id);
     }
 };
 </script>
@@ -100,32 +63,21 @@ export default {
                 <div class="card bg-dark text-white" style="border-radius: 1rem;">
                     <div class="card-body p-5 text-center">
                         <div class="mb-md-5 mt-md-4 pb-5">
-                            <div v-if="currentUser" class="edit-form">
-                                <h5 class="fw-bold mb-2 text-uppercase">Edition de : {{ currentUser.username }}</h5>
+                            <div v-if="currentSalon" class="edit-form">
+                                <h5 class="fw-bold mb-2 text-uppercase">Edition de : {{ currentSalon.name }}</h5>
                                 <div class=" row d-flex justify-content-center">
                                     <div class="form-outline form-white mt-4">
                                         <div class="form-group">
-                                            <label for="username">Username</label>
+                                            <label for="username">Name</label>
                                             <input type="text" class="form-control" id="username"
-                                                v-model="currentUser.username" />
+                                                v-model="currentSalon.name" />
                                         </div>
                                     </div>
                                     <div class="form-outline form-white mt-4">
                                         <div class="form-group">
-                                            <label for="email">Email</label>
-                                            <input type="text" class="form-control" id="email"
-                                                v-model="currentUser.email" />
-                                        </div>
-                                    </div>
-
-                                    <div class="form-outline form-white mt-4">
-                                        <div class="form-group">
-                                            <h5>Role</h5><br>
-                                            <div v-for="role in roles" :key="role.id">
-                                                <label>{{ role.name }}</label>
-                                                <input  type="checkbox"
-                                                    v-model="currentUser.roles" :value="role" />
-                                            </div>
+                                            <label for="email">Size</label>
+                                            <input type="number" class="form-control" id="email"
+                                                v-model="currentSalon.size" />
                                         </div>
                                     </div>
 
@@ -133,12 +85,12 @@ export default {
                                         <div class="form-group">
                                             <div class="form-group">
                                                 <label for="statut">Statut : </label>
-                                                {{ currentUser.statut ? "Active" : "Non Active" }}
+                                                {{ currentSalon.statut ? "Active" : "Non Active" }}
                                             </div>
 
                                             <label class="toggle">
                                                 <input class="toggle-checkbox" type="checkbox"
-                                                    v-model="currentUser.statut">
+                                                    v-model="currentSalon.statut">
                                                 <div class="toggle-switch"></div>
                                             </label>
                                         </div>
@@ -155,11 +107,11 @@ export default {
                                       Active
                                   </button> -->
 
-                                    <button class=" btn-delete badge badge-danger mr-2" @click="deleteUser">
+                                    <button class=" btn-delete badge badge-danger mr-2" @click="deleteSalon">
                                         Delete
                                     </button>
 
-                                    <button type="submit" class="btn-edit badge badge-success" @click="updateUser">
+                                    <button type="submit" class="btn-edit badge badge-success" @click="updateSalon">
                                         Update
                                     </button>
                                     <p>{{ message }}</p>
@@ -167,7 +119,7 @@ export default {
                             </div>
                             <div v-else>
                                 <br />
-                                <p>Please click on a User...</p>
+                                <p>Please click on a Salon...</p>
                             </div>
                         </div>
                     </div>
