@@ -54,31 +54,31 @@ const io = require("socket.io")(server, {
   }
 });
 
+var countUser = [];
+
 io.on("connection", (socket) => {
   console.log("New client connected");
-  // var loggedUser;
-  // console.log('log:'+loggedUser)
+
 
   socket.on("disconnect", () => {
     console.log("Client disconnected");
-    // if (loggedUser !== undefined) {
-    //   console.log('user disconnected : ' + loggedUser.username);
-    //   var serviceMessage = {
-    //     text: 'User "' + loggedUser.username + '" disconnected',
-    //     type: 'logout'
-    //   };
-    //   socket.broadcast.emit('service-message', serviceMessage);
-    // }
   });
 
+
+
+  //-----------------Gestion connexion ------------------
   socket.on("JOIN", (data) => {
+    //--------------Join un salon------------------
     socket.join(data.salon.name);
-    // loggedUser = data.user.username;
-    // var serviceMessage = {
-    //   text: loggedUser + '" c\'est connecté',
-    //   type: 'login'
-    // };
-    // io.in(data.salon.name).emit('SERVICE_MESSAGE', serviceMessage);
+    socket.salons = data.salon.name;
+    //--------------Service message connecté ------------------
+    loggedUser = data.user.username;
+    var serviceMessage = {
+      message: loggedUser + ' c\'est connecté',
+      type: 'login'
+    };
+    socket.broadcast.in(data.salon.name).emit('SERVICE_MESSAGE', serviceMessage);
+    //--------------Recuperation des messages du salon------------------
     MessageSalon.findAll({
       where: {
         salonId: data.salon.id
@@ -90,26 +90,53 @@ io.on("connection", (socket) => {
         }
       ],
       order: [
-        // Will escape title and validate DESC against a list of valid direction parameters
         ['createdAt', 'ASC'],
       ]
     }).then((messages) => {
       io.in(data.salon.name).emit('INIT_MESSAGES', messages)
     }).catch(err => {
       console.log(err)
-      }
+    }
     );
+    //--------------Recuperation du nombre utilisateurs connectés------------------
+    let existingRoom = countUser.find(salon => salon.name === data.salon.name);
+    if (existingRoom) {
+      existingRoom.users.push(data.user.username);
+    } else {
+      countUser.push({ name: data.salon.name, users: [data.user.username] });
+    }   
+    io.in(socket.salons).emit('COUNT_USER', { countUser })
   })
 
+  //-----------------Typing------------------
   socket.on('TYPING', (data) => {
     io.in(data.salon.name).emit('TYPING', data)
   })
 
-  socket.on("LEAVE", (salon) => {
-    socket.leave(salon);
+  //-----------------Gestion de déconnexion------------------
+  socket.on("LEAVE", (data) => {
+    loggedUser = data.user.username;
+    var serviceMessage = {
+      message: loggedUser + ' c\'est deconnecté',
+      type: 'logout'
+    };
+    socket.broadcast.in(socket.salons).emit('SERVICE_MESSAGE', serviceMessage);
+
+    //--------------Recuperation du nombre utilisateurs connectés------------------
+    let existingRoom = countUser.find(salon => salon.name === data.salon);
+    if(existingRoom){
+      var index = existingRoom.users.indexOf(data.user.username);
+      if (index > -1) {
+        existingRoom.users.splice(index, 1);
+      }
+    }
+    io.in(socket.salons).emit('COUNT_USER', { countUser })
+    //--------------Leave un salon------------------
+    socket.leave(socket.salons);
   })
 
-  socket.on('SEND_MESSAGE', (data) =>{
+  //-----------------Envoi de message------------------
+  socket.on('SEND_MESSAGE', (data) => {
     MessageSalon.create({
       content: data.message,
       salonId: data.salon.id,
@@ -119,8 +146,38 @@ io.on("connection", (socket) => {
       io.in(data.salon.name).emit('MESSAGE', data)
     }).catch(err => {
       console.log(err)
-      });
+    });
   });
+
+  //------------------Deconnexion------------------
+  socket.on('DISCONNECT_USER', (data) => {
+    loggedUser = data.user.username;
+    var serviceMessage = {
+      message: loggedUser + ' c\'est deconnecté',
+      type: 'logout'
+    };
+    //recupérer le salon de l'utilisateu dans le socket 
+    socket.broadcast.in(socket.rooms).emit('SERVICE_MESSAGE', serviceMessage);
+    //--------------Recuperation du nombre utilisateurs connectés------------------
+    let existingRoom = countUser.find(salon => salon.name === socket.salons);
+    if(existingRoom){
+      var index = existingRoom.users.indexOf(data.user.username);
+      if (index > -1) {
+        existingRoom.users.splice(index, 1);
+      }
+    }
+    io.in(socket.salons).emit('COUNT_USER', { countUser })
+    //--------------Leave un salon------------------
+    socket.leave(socket.salons);
+    console.log('disconnect user : ' + data.user.username)
+    setTimeout(() => socket.disconnect(true), 5000);
+  })
+  
+    socket.on('COUNT_USER_INIT',()=>{
+      console.log(countUser)
+      io.emit('COUNT_USER_INIT', { countUser })
+    })
+
 });
 
 
