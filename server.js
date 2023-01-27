@@ -151,13 +151,14 @@ io.on("connection", (socket) => {
 
   //------------------Deconnexion------------------
   socket.on('DISCONNECT_USER', (data) => {
+    if(data.salon){
     loggedUser = data.user.username;
     var serviceMessage = {
       message: loggedUser + ' c\'est deconnecté',
       type: 'logout'
     };
     //recupérer le salon de l'utilisateu dans le socket 
-    socket.broadcast.in(socket.rooms).emit('SERVICE_MESSAGE', serviceMessage);
+    socket.in(data.salon.name).emit('SERVICE_MESSAGE', serviceMessage);
     //--------------Recuperation du nombre utilisateurs connectés------------------
     let existingRoom = countUser.find(salon => salon.name === socket.salons);
     if(existingRoom){
@@ -166,15 +167,17 @@ io.on("connection", (socket) => {
         existingRoom.users.splice(index, 1);
       }
     }
-    io.in(socket.salons).emit('COUNT_USER', { countUser })
+    io.in(data.salon.name).emit('COUNT_USER', { countUser })
+    io.emit('COUNT_USER_INIT', { countUser })
     //--------------Leave un salon------------------
-    socket.leave(socket.salons);
+    socket.leave(data.salon.name);
+  }
     console.log('disconnect user : ' + data.user.username)
     setTimeout(() => socket.disconnect(true), 5000);
   })
-  
+
+  //------------------Initialisation du nombre d'utilisateurs connectés------------------
     socket.on('COUNT_USER_INIT',()=>{
-      console.log(countUser)
       io.emit('COUNT_USER_INIT', { countUser })
     })
 

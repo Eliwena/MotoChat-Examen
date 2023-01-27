@@ -1,7 +1,4 @@
 <script>
-
-import io from "socket.io-client";
-
 export default {
   computed: {
     currentUser() {
@@ -15,21 +12,11 @@ export default {
       return false;
     },
   },
-  data(){
-      return {
-        socket: io('localhost:8000'),
-      }
-    },
   methods: {
     logOut() {
       this.$store.dispatch('auth/logout');
       this.$router.push('/login');
     },
-    leaveSalon() {
-      this.socket.emit('DISCONNECT_USER', {
-        user: this.currentUser,
-      })
-    }
   }
 };
 
@@ -45,10 +32,10 @@ export default {
       <router-link v-if="showAdminBoard" to="/admin/users" class="nav-link">Gestion User</router-link>
       <!-- <router-link v-if="currentUser" to="/user" class="nav-link">User</router-link> -->
 
-      <router-link @click="leaveSalon" v-if="currentUser && !showAdminBoard" to="/message" class="nav-link">Message
+      <router-link v-if="currentUser && !showAdminBoard" to="/message" class="nav-link">Message
       </router-link>
 
-      <router-link @click="leaveSalon" v-if="currentUser && !showAdminBoard" to="/salon" class="nav-link">Salon
+      <router-link  v-if="currentUser && !showAdminBoard" to="/salon" class="nav-link">Salon
       </router-link>
 
       <router-link v-if="showAdminBoard" to="/admin/salon" class="nav-link">Gestion Salon

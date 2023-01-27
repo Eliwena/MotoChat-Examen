@@ -185,14 +185,13 @@ export default {
                 }
             });
         });
-
-        window.addEventListener("beforeunload", () => {
-            this.socket.emit('DISCONNECT_USER', {
-                user: this.currentUser,
-            })
-        });
     },
-
+    unmounted (){
+        this.socket.emit('DISCONNECT_USER', {
+        user: this.currentUser,
+        salon: this.currentSalon,
+      })
+    }
 };
 
 
