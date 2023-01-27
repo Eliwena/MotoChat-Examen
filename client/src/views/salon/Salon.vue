@@ -172,7 +172,7 @@ export default {
                                         <div v-if="msg.user.username == currentUser.username">
                                             <p class="messageCurrentUser"><span class="nameUser">{{ msg.user.username }}
                                                     à {{ date(msg.createdAt) }}
-                                                </span>{{ msg.content }}</p>
+                                            </span>{{ msg.content }}</p>
                                         </div>
                                         <div v-else>
                                             <p class="messageOtherUser"><span class="nameUser">{{ msg.user.username }} à
@@ -262,6 +262,5 @@ export default {
 .messages {
     overflow: scroll;
     height: 500px;
-    flex-direction: column;
 }
 </style>

@@ -88,6 +88,10 @@ io.on("connection", (socket) => {
           model: User,
           attributes: ['username']
         }
+      ],
+      order: [
+        // Will escape title and validate DESC against a list of valid direction parameters
+        ['createdAt', 'ASC'],
       ]
     }).then((messages) => {
       io.in(data.salon.name).emit('INIT_MESSAGES', messages)
