@@ -5,52 +5,62 @@ export default {
       return this.$store.state.auth.user;
     },
     showAdminBoard() {
-      console.log(this.currentUser)
+      console.log(this.currentUser);
       if (this.currentUser && this.currentUser.roles) {
-        return this.currentUser.roles.includes('ROLE_ADMIN');
+        return this.currentUser.roles.includes("ROLE_ADMIN");
       }
       return false;
     },
   },
   methods: {
     logOut() {
-      this.$store.dispatch('auth/logout');
-      this.$router.push('/login');
+      this.$store.dispatch("auth/logout");
+      this.$router.push("/login");
     },
-  }
+  },
 };
-
 </script>
 
 <template>
   <div>
     <nav class="navMenu">
-      <router-link to="/home" class="nav-link">
-        Home
-      </router-link>
-      <router-link v-if="showAdminBoard" to="/admin" class="nav-link">Admin</router-link>
-      <router-link v-if="showAdminBoard" to="/admin/users" class="nav-link">Gestion User</router-link>
-      <!-- <router-link v-if="currentUser" to="/user" class="nav-link">User</router-link> -->
+      <router-link to="/home" class="nav-link"> Home </router-link>
+      <router-link v-if="showAdminBoard" to="/admin" class="nav-link"
+        >Admin</router-link
+      >
+      <router-link v-if="showAdminBoard" to="/admin/users" class="nav-link"
+        >Gestion User</router-link
+      >
 
-      <router-link v-if="currentUser && !showAdminBoard" to="/message" class="nav-link">Message
-      </router-link>
-
-      <router-link  v-if="currentUser && !showAdminBoard" to="/salon" class="nav-link">Salon
-      </router-link>
-
-      <router-link v-if="showAdminBoard" to="/admin/salon" class="nav-link">Gestion Salon
-      </router-link>
-
-      <router-link v-if="showAdminBoard" to="/salon" class="nav-link">Salon
+      <router-link
+        v-if="currentUser && !showAdminBoard"
+        to="/privatechat"
+        class="nav-link"
+        >Message
       </router-link>
 
-      <router-link v-if="showAdminBoard" to="/admin/message" class="nav-link">Message
+      <router-link
+        v-if="currentUser && !showAdminBoard"
+        to="/salon"
+        class="nav-link"
+        >Salon
+      </router-link>
+
+      <router-link v-if="showAdminBoard" to="/admin/salon" class="nav-link"
+        >Gestion Salon
+      </router-link>
+
+      <router-link v-if="showAdminBoard" to="/salon" class="nav-link"
+        >Salon
+      </router-link>
+
+      <router-link v-if="showAdminBoard" to="/admin/message" class="nav-link"
+        >Message
       </router-link>
 
       <router-link v-if="!currentUser" to="/register" class="nav-link">
         Sign Up
       </router-link>
-
 
       <router-link v-if="!currentUser" to="/login" class="nav-link">
         Login
