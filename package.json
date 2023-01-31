@@ -1,14 +1,27 @@
 {
-    "name": "express_app",
-    "version": "1.0.0",
-    "license": "MIT",
-    "description": "Node.js and express on Docker",
-    "author": "Firstname Lastname <mynames@example.com>",
-    "main": "app.js",
-    "scripts": {
-        "start": "node app.js"
-    },
-    "dependencies": {
-        "express": "^4.16.1"
-    }
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon -L server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@vue/cli": "^5.0.8",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.17.2",
+    "jsonwebtoken": "^9.0.0",
+    "nodemon": "^2.0.15",
+    "pg": "^8.7.1",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.28.0",
+    "socket.io": "^4.5.4",
+    "vue": "^3.2.45"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
 }
