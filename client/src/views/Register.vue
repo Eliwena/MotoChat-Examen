@@ -92,7 +92,6 @@ export default {
 
   methods: {
     saveUser() {
-      console.log("aa")
       var data = {
         username: this.user.username,
         password: this.user.password,

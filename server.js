@@ -147,8 +147,8 @@ io.on("connection", (socket) => {
     //--------------Service message connecté ------------------
     loggedUser = data.user.username;
     var serviceMessage = {
-      message: loggedUser + " c'est connecté",
-      type: "login",
+      message: loggedUser + ' s\'est connecté',
+      type: 'login'
     };
     socket.broadcast
       .in(data.salon.name)
@@ -252,7 +252,6 @@ io.on("connection", (socket) => {
       //--------------Leave un salon------------------
       socket.leave(data.salon.name);
     }
-    //console.log("disconnect user : " + data.user.username);
     setTimeout(() => socket.disconnect(true), 5000);
   });
 
@@ -276,11 +275,294 @@ io.on("connection", (socket) => {
       "new-private-message",
       messageResponse
     );
-    console.log("messageResponse", messageResponse);
-    console.log("message", message);
   });
-});
+    //------------------Chatbot------------------
+    let appointments = []; // Storing appointments
+    let msgDebutWorkflow = 'Bonjour, je suis votre assistant personnel. Comment puis-je vous aider ?';
+    let msgRedemarrageWorkflow = 'Avez-vous encore besoin d\'aide sur un autre sujet ?';
 
+    function checkAvailability(currentDate, offset = 0) {
+      let availability = [{ value : "01-02-2023", title : "01-02-2023" }, { value : "02-02-2023", title : "02-02-2023" }, { value : "03-02-2023", title : "03-02-2023" }, { value : "04-02-2023", title : "04-02-2023" }, { value : "05-02-2023", title : "05-02-2023" }];
+      // let date = new Date(currentDate);
+      // date.setDate(date.getDate() + offset);
+      // for (let i = 0; i < 7; i++) {
+      //     let day = date.getDay();
+      //     if (day !== 0 && day !== 6) {
+      //         let dateString = date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
+      //         if (!appointments[dateString]) {
+      //             availability.push(dateString);
+      //         }
+      //     }
+      //     date.setDate(date.getDate() + 1);
+      // }
+      return availability;
+    }
+
+    socket.on('help_request', data => {
+        // Ask for help type
+        socket.emit('help_type', { message: msgDebutWorkflow, buttons: [{ "value" : "vehicle_maintenance", "title" : "Maintenance" }, { "value" : "vehicle_info", "title" : "Infos sur un véhicule" }, { "value" : "contact_info", "title" : "Infos de contact" }, { "value" : "disconnect_chatbot", "title" : "Déconnexion" }] });
+    });
+    socket.on('vehicle_maintenance', data => {
+        // Ask for vehicle year
+        socket.emit('vehicle_year_question', { message: 'Quelle est l\'année de votre véhicule ?', toEmit: 'vehicle_year' });
+
+    });
+
+    socket.on('vehicle_year', data => {
+        // Ask for last maintenance date
+        socket.emit('last_maintenance_question', { message: 'De quand date le dernier entretien de votre moto ?', toEmit: 'last_maintenance' });
+
+        socket.on('last_maintenance', data => {
+            let lastMaintenance = new Date(data);
+            let currentDate = new Date();
+            let oneYearAgo = new Date();
+            oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+            if (lastMaintenance < oneYearAgo) {
+                // Check availability for current week
+                let currentWeekAvailability = checkAvailability(currentDate);
+                if (currentWeekAvailability.length > 0) {
+                    // Offer available dates for current week
+                    socket.emit('current_week_availability', { message: 'Voici les dates disponibles cette semaine :', availability: currentWeekAvailability, toEmit: 'selected_date' });
+                    socket.on('selected_date', data => {
+                        // Save selected date on server
+                        appointments[data] = { user: socket.id };
+                        socket.emit('appointment_confirmed', { message: 'Votre rendez-vous du ' + data + ' a bien été confirmé.' });
+                        // Restart workflow
+                        socket.emit('help_request_restart', { message: msgRedemarrageWorkflow, buttons: [{ "value" : "vehicle_maintenance", "title" : "Maintenance" }, { "value" : "vehicle_info", "title" : "Infos sur un véhicule" }, { "value" : "contact_info", "title" : "Infos de contact" }, { "value" : "disconnect_chatbot", "title" : "Déconnexion" }] });
+                    });
+                } else {
+                    // Check availability for next week
+                    let nextWeekAvailability = checkAvailability(currentDate, 7);
+                    if (nextWeekAvailability.length > 0) {
+                        // Offer available dates for next week
+                        socket.emit('next_week_availability', { message: 'Il n\'y a plus de dates disponibles cette semaine. Voici ce que je peux vous proposer pour la semaine prochaine :', availability: nextWeekAvailability, toEmit: 'selected_date' });
+                        socket.on('selected_date', data => {
+                            // Save selected date on server
+                            appointments[data] = { user: socket.id };
+                            socket.emit('appointment_confirmed', { message: 'Votre rendez-vous du ' + data + ' a bien été confirmé.' });
+                            // Restart workflow
+                            socket.emit('help_request_restart', { message: msgRedemarrageWorkflow, buttons: [{ "value" : "vehicle_maintenance", "title" : "Maintenance" }, { "value" : "vehicle_info", "title" : "Infos sur un véhicule" }, { "value" : "contact_info", "title" : "Infos de contact" }, { "value" : "disconnect_chatbot", "title" : "Déconnexion" }] });
+                        });
+                    } else {
+                        socket.emit('no_availability', { message: 'Désolé, Nous n\'avons pas de dates disponibles pour le moment.' });
+                        // Restart workflow
+                        socket.emit('help_request_restart', { message: msgRedemarrageWorkflow, buttons: [{ "value" : "vehicle_maintenance", "title" : "Maintenance" }, { "value" : "vehicle_info", "title" : "Infos sur un véhicule" }, { "value" : "contact_info", "title" : "Infos de contact" }, { "value" : "disconnect_chatbot", "title" : "Déconnexion" }] });
+                    }
+                }
+            } else {
+                // Ask for kilometers driven since last maintenance
+                socket.emit('km_driven_question', { message: 'Combien de kilomètres avez-vous parcouru depuis la dernière maintenance ?', toEmit: 'km_driven' });
+                
+                socket.on('km_driven', data => {
+                    if (data >= 10000) {
+                        // Check availability for current week
+                        let currentWeekAvailability = checkAvailability(currentDate);
+                        if (currentWeekAvailability.length > 0) {
+                            // Offer available dates for current week
+                            socket.emit('current_week_availability', { message: 'Voici les dates disponibles cette semaine :', availability: currentWeekAvailability, toEmit: 'selected_date' });
+                            socket.on('selected_date', data => {
+                                // Save selected date on server
+                                appointments[data] = { user: socket.id };
+                                socket.emit('appointment_confirmed', { message: 'Votre rendez-vous du ' + data + ' a bien été confirmé.' });
+                                // Restart workflow
+                                socket.emit('help_request_restart', { message: msgRedemarrageWorkflow, buttons: [{ "value" : "vehicle_maintenance", "title" : "Maintenance" }, { "value" : "vehicle_info", "title" : "Infos sur un véhicule" }, { "value" : "contact_info", "title" : "Infos de contact" }, { "value" : "disconnect_chatbot", "title" : "Déconnexion" }] });
+                            });
+                        } else {
+                            // Check availability for next week
+                            let nextWeekAvailability = checkAvailability(currentDate, 7);
+                            if (nextWeekAvailability.length > 0) {
+                                // Offer available dates for next week
+                                socket.emit('next_week_availability', { message: 'Il n\'y a plus de dates disponibles cette semaine. Voici ce que je peux vous proposer pour la semaine prochaine :', availability: nextWeekAvailability, toEmit: 'selected_date' });
+                                socket.on('selected_date', data => {
+                                    // Save selected date on server
+                                    appointments[data] = { user: socket.id };
+                                    socket.emit('appointment_confirmed', { message: 'Votre rendez-vous du ' + data + ' a bien été confirmé.' });
+                                    // Restart workflow
+                                    socket.emit('help_request_restart', { message: msgRedemarrageWorkflow, buttons: [{ "value" : "vehicle_maintenance", "title" : "Maintenance" }, { "value" : "vehicle_info", "title" : "Infos sur un véhicule" }, { "value" : "contact_info", "title" : "Infos de contact" }, { "value" : "disconnect_chatbot", "title" : "Déconnexion" }] });
+                                });
+                            } else {
+                                socket.emit('no_availability', { message: 'Désolé, Nous n\'avons pas de dates disponibles pour le moment.' });
+                                // Restart workflow
+                                socket.emit('help_request_restart', { message: msgRedemarrageWorkflow, buttons: [{ "value" : "vehicle_maintenance", "title" : "Maintenance" }, { "value" : "vehicle_info", "title" : "Infos sur un véhicule" }, { "value" : "contact_info", "title" : "Infos de contact" }, { "value" : "disconnect_chatbot", "title" : "Déconnexion" }] });
+                            }
+                        }
+                    } else {
+                        // Ask if user wants to schedule a maintenance
+                        socket.emit('schedule_maintenance_question', { message: 'Voulez-vous réviser votre véhicule ?', buttons: [{ "value" : "1", "title" : "Oui" }, { "value" : "0", "title" : "Non" }], toEmit: 'schedule_maintenance' });
+                        socket.on('schedule_maintenance', data => {
+                            if (data) {
+                                // Check availability for current week
+                                let currentWeekAvailability = checkAvailability(currentDate);
+                                if (currentWeekAvailability.length > 0) {
+                                    // Offer available dates for current week
+                                    socket.emit('current_week_availability', { message: 'Voici les dates disponibles cette semaine :', availability: currentWeekAvailability, toEmit: 'selected_date' });
+                                    socket.on('selected_date', data => {
+                                        // Save selected date on server
+                                        appointments[data] = { user: socket.id };
+                                        socket.emit('appointment_confirmed', { message: 'Votre rendez-vous du ' + data + ' a bien été confirmé.' });
+                                        // Restart workflow
+                                        socket.emit('help_request_restart', { message: msgRedemarrageWorkflow, buttons: [{ "value" : "vehicle_maintenance", "title" : "Maintenance" }, { "value" : "vehicle_info", "title" : "Infos sur un véhicule" }, { "value" : "contact_info", "title" : "Infos de contact" }, { "value" : "disconnect_chatbot", "title" : "Déconnexion" }] });
+                                    });
+                                } else {
+                                    // Check availability for next week
+                                    let nextWeekAvailability = checkAvailability(currentDate, 7);
+                                    if (nextWeekAvailability.length > 0) {
+                                        // Offer available dates for next week
+                                        socket.emit('next_week_availability', { message: 'Il n\'y a plus de dates disponibles cette semaine. Voici ce que je peux vous proposer pour la semaine prochaine :', availability: nextWeekAvailability, toEmit: 'selected_date' });
+                                        socket.on('selected_date', data => {
+                                            // Save selected date on server
+                                            appointments[data] = { user: socket.id };
+                                            socket.emit('appointment_confirmed', { message: 'Votre rendez-vous du ' + data + ' a bien été confirmé.' });
+                                            // Restart workflow
+                                            socket.emit('help_request_restart', { message: msgRedemarrageWorkflow, buttons: [{ "value" : "vehicle_maintenance", "title" : "Maintenance" }, { "value" : "vehicle_info", "title" : "Infos sur un véhicule" }, { "value" : "contact_info", "title" : "Infos de contact" }, { "value" : "disconnect_chatbot", "title" : "Déconnexion" }] });
+                                        });
+                                    } else {
+                                        socket.emit('no_availability', { message: 'Désolé, Nous n\'avons pas de dates disponibles pour le moment.' });
+                                        // Restart workflow
+                                        socket.emit('help_request_restart', { message: msgRedemarrageWorkflow, buttons: [{ "value" : "vehicle_maintenance", "title" : "Maintenance" }, { "value" : "vehicle_info", "title" : "Infos sur un véhicule" }, { "value" : "contact_info", "title" : "Infos de contact" }, { "value" : "disconnect_chatbot", "title" : "Déconnexion" }] });
+                                    }
+                                }
+                            } else {
+                                // Restart workflow
+                                socket.emit('help_request_restart', { message: msgRedemarrageWorkflow, buttons: [{ "value" : "vehicle_maintenance", "title" : "Maintenance" }, { "value" : "vehicle_info", "title" : "Infos sur un véhicule" }, { "value" : "contact_info", "title" : "Infos de contact" }, { "value" : "disconnect_chatbot", "title" : "Déconnexion" }] });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    });
+        
+    socket.on('vehicle_info', data => {
+        // Ask for usage type
+        socket.emit('usage_type_question', { message: 'Quel type d\'usage avez-vous ?', buttons: [{ "value" : "road", "title" : "Route" }, { "value" : "off-road", "title" : "Hors piste" }, { "value" : "performance", "title" : "Course" } ], toEmit: 'usage_type' });
+        socket.on('usage_type', data => {
+            let date = new Date();
+            let currentDate = date.getFullYear() + '-' + (date.getMonth() + 1 < 10 ? "0".concat(date.getMonth() + 1) : date.getMonth() + 1) + '-' + date.getDate();
+            if (data === 'road') {
+                // Offer road test drive
+                let currentWeekAvailability = checkAvailability(currentDate);
+                if (currentWeekAvailability.length > 0) {
+                    // Offer available dates for current week
+                    socket.emit('current_week_availability', { message: 'Voici les dates disponibles cette semaine :', availability: currentWeekAvailability, toEmit: 'selected_date' });
+                    socket.on('selected_date', data => {
+                        // Save selected date on server
+                        appointments[data] = { user: socket.id, type: 'road' };
+                        socket.emit('appointment_confirmed', { message: 'Votre rendez-vous du ' + data + ' a bien été confirmé.'});
+                        // Restart workflow
+                        socket.emit('help_request_restart', { message: msgRedemarrageWorkflow, buttons: [{ "value" : "vehicle_maintenance", "title" : "Maintenance" }, { "value" : "vehicle_info", "title" : "Infos sur un véhicule" }, { "value" : "contact_info", "title" : "Infos de contact" }, { "value" : "disconnect_chatbot", "title" : "Déconnexion" }] });
+                    });
+                } else {
+                    // Check availability for next week
+                    let nextWeekAvailability = checkAvailability(currentDate, 7);
+                    if (nextWeekAvailability.length > 0) {
+                        // Offer available dates for next week
+                        socket.emit('next_week_availability', { message: 'Il n\'y a plus de dates disponibles cette semaine. Voici ce que je peux vous proposer pour la semaine prochaine :', availability: nextWeekAvailability, toEmit: 'selected_date' });
+                        socket.on('selected_date', data => {
+                            // Save selected date on server
+                            appointments[data] = { user: socket.id, type: 'road' };
+                            socket.emit('appointment_confirmed', { message: 'Votre rendez-vous de test de conduite pour le ' + data + ' a bien été confirmé' });
+                            // Restart workflow
+                            socket.emit('help_request_restart', { message: msgRedemarrageWorkflow, buttons: [{ "value" : "vehicle_maintenance", "title" : "Maintenance" }, { "value" : "vehicle_info", "title" : "Infos sur un véhicule" }, { "value" : "contact_info", "title" : "Infos de contact" }, { "value" : "disconnect_chatbot", "title" : "Déconnexion" }] });
+                        });
+                    } else {
+                        socket.emit('no_availability', { message: 'Désolé, Nous n\'avons pas de dates disponibles pour le moment.' });
+                        // Restart workflow
+                        socket.emit('help_request_restart', { message: msgRedemarrageWorkflow, buttons: [{ "value" : "vehicle_maintenance", "title" : "Maintenance" }, { "value" : "vehicle_info", "title" : "Infos sur un véhicule" }, { "value" : "contact_info", "title" : "Infos de contact" }, { "value" : "disconnect_chatbot", "title" : "Déconnexion" }] });
+                    }
+                }
+            } else if (data === 'off-road') {
+                // Offer off-road test drive
+                let currentWeekAvailability = checkAvailability(currentDate);
+                if (currentWeekAvailability.length > 0) {
+                    // Offer available dates for current week
+                    socket.emit('current_week_availability', { message: 'Voici les dates disponibles cette semaine : ', availability: currentWeekAvailability, toEmit: 'selected_date' });
+                    socket.on('selected_date', data => {
+                        // Save selected date on server
+                        appointments[data] = { user: socket.id, type: 'off-road' };
+                        socket.emit('appointment_confirmed', { message: 'Votre rendez-vous de test de conduite pour le ' + data + ' a bien été confirmé' });
+                        // Restart workflow
+                        socket.emit('help_request_restart', { message: msgRedemarrageWorkflow, buttons: [{ "value" : "vehicle_maintenance", "title" : "Maintenance" }, { "value" : "vehicle_info", "title" : "Infos sur un véhicule" }, { "value" : "contact_info", "title" : "Infos de contact" }, { "value" : "disconnect_chatbot", "title" : "Déconnexion" }] });
+                    });
+                } else {
+                    // Check availability for next week
+                    let nextWeekAvailability = checkAvailability(currentDate, 7);
+                    if (nextWeekAvailability.length > 0) {
+                        // Offer available dates for next week
+                        socket.emit('next_week_availability', { message: 'Il n\'y a plus de dates disponibles cette semaine. Voici ce que je peux vous proposer pour la semaine prochaine : ', availability: nextWeekAvailability, toEmit: 'selected_date' });
+                        socket.on('selected_date', data => {
+                            // Save selected date on server
+                            appointments[data] = { user: socket.id, type: 'off-road' };
+                            socket.emit('appointment_confirmed', { message: 'Votre rendez-vous de test de conduite pour le ' + data + ' a bien été confirmé' });
+                            // Restart workflow
+                            socket.emit('help_request_restart', { message: msgRedemarrageWorkflow, buttons: [{ "value" : "vehicle_maintenance", "title" : "Maintenance" }, { "value" : "vehicle_info", "title" : "Infos sur un véhicule" }, { "value" : "contact_info", "title" : "Infos de contact" }, { "value" : "disconnect_chatbot", "title" : "Déconnexion" }] });
+                        });
+                    } else {
+                        socket.emit('no_availability', { message: 'Désolé, Nous n\'avons pas de dates disponibles pour le moment.' });
+                        // Restart workflow
+                        socket.emit('help_request_restart', { message: msgRedemarrageWorkflow, buttons: [{ "value" : "vehicle_maintenance", "title" : "Maintenance" }, { "value" : "vehicle_info", "title" : "Infos sur un véhicule" }, { "value" : "contact_info", "title" : "Infos de contact" }, { "value" : "disconnect_chatbot", "title" : "Déconnexion" }] });
+                    }
+                }
+            } else if (data === 'performance') {
+                // Offer performance test drive
+                let currentWeekAvailability = checkAvailability(currentDate);
+                if (currentWeekAvailability.length > 0) {
+                    // Offer available dates for current week
+                    socket.emit('current_week_availability', { message: 'Voici les dates disponibles cette semaine', availability: currentWeekAvailability, toEmit: 'selected_date' });
+                    socket.on('selected_date', data => {
+                        // Save selected date on server
+                        appointments[data] = { user: socket.id, type: 'performance' };
+                        socket.emit('appointment_confirmed', { message: 'Votre rendez-vous de test de conduite pour le ' + data + ' a bien été confirmé' });
+                        // Restart workflow
+                        socket.emit('help_request_restart', { message: msgRedemarrageWorkflow, buttons: [{ "value" : "vehicle_maintenance", "title" : "Maintenance" }, { "value" : "vehicle_info", "title" : "Infos sur un véhicule" }, { "value" : "contact_info", "title" : "Infos de contact" }, { "value" : "disconnect_chatbot", "title" : "Déconnexion" }] });
+                    });
+                } else {
+                    // Check availability for next week
+                    let nextWeekAvailability = checkAvailability(currentDate, 7);
+                    if (nextWeekAvailability.length > 0) {
+                        // Offer available dates for next week
+                        socket.emit('next_week_availability', { message: 'Il n\'y a plus de dates disponibles cette semaine. Voici ce que je peux vous proposer pour la semaine prochaine :', availability: nextWeekAvailability, toEmit: 'selected_date' });
+
+                        socket.on('selected_date', data => {
+                            // Save selected date on server
+                            appointments[data] = { user: socket.id, type: 'performance' };
+                            socket.emit('appointment_confirmed', { message: 'Votre rendez-vous de test de conduite pour le ' + data + ' a bien été confirmé' });
+                            // Restart workflow
+                            socket.emit('help_request_restart', { message: msgRedemarrageWorkflow, buttons: [{ "value" : "vehicle_maintenance", "title" : "Maintenance" }, { "value" : "vehicle_info", "title" : "Infos sur un véhicule" }, { "value" : "contact_info", "title" : "Infos de contact" }, { "value" : "disconnect_chatbot", "title" : "Déconnexion" }] });
+                        });
+                    } else {
+                        socket.emit('no_availability', { message: 'Désolé, Nous n\'avons pas de dates disponibles pour le moment.' });
+                        // Restart workflow
+                        socket.emit('help_request_restart', { message: msgRedemarrageWorkflow, buttons: [{ "value" : "vehicle_maintenance", "title" : "Maintenance" }, { "value" : "vehicle_info", "title" : "Infos sur un véhicule" }, { "value" : "contact_info", "title" : "Infos de contact" }, { "value" : "disconnect_chatbot", "title" : "Déconnexion" }] });
+                    }
+                }
+            }
+        });
+    });
+        
+    socket.on('contact_info', data => {
+        
+        let message = 'Voulez-vous nous contacter par mail ou par téléphone ?';
+        // Ask for contact info type
+        socket.emit('contact_info_type_question', { message: message, buttons: [{ "value" : "email", "title" : "Par mail" }, { "value" : "phone", "title" : "Par téléphone" }], toEmit: 'contact_info_type' });
+        socket.on('contact_info_type', data => {
+            if (data === 'email') {
+                // Send contact email
+                socket.emit('contact_email', { message: 'Pour nous contacter par mail, veuillez vous adresser à motochat@examen.com' });
+            } else if (data === 'phone') {
+                // Send contact phone number
+                socket.emit('contact_phone', { message: 'Pour nous contacter par téléphone, veuillez vous appeler le 01.23.45.67.89' });
+            }
+            // Restart workflow
+            socket.emit('help_request_restart', { message: msgRedemarrageWorkflow, buttons: [{ "value" : "vehicle_maintenance", "title" : "Maintenance" }, { "value" : "vehicle_info", "title" : "Infos sur un véhicule" }, { "value" : "contact_info", "title" : "Infos de contact" }, { "value" : "disconnect_chatbot", "title" : "Déconnexion" }] });
+        });
+    });
+
+    socket.on('disconnect_chatbot', () => {
+        socket.emit('disconnected_chatbot', { message: '' });
+    });
+});
 
 
 

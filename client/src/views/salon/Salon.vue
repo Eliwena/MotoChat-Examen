@@ -53,7 +53,6 @@ export default {
       if (this.currentSalon) {
         this.salons.forEach((element) => {
           if (element.name == this.currentSalon.name) {
-            console.log(element);
             element.count = element.count - 1;
           }
         });
@@ -162,7 +161,6 @@ export default {
       };
       servicesMessagesArray.type = data.type;
       this.messages.push(servicesMessagesArray);
-      console.log(servicesMessagesArray);
     });
 
     //-----------------Affichage du nombre d'utilisateurs connectés-----------------
