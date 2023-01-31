@@ -5,23 +5,22 @@ const User = db.users;
 const Op = db.Sequelize.Op;
 const Role = db.role;
 
-
 function create(req, res) {
   User.create({
     username: req.body.username,
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 8),
-    statut: false
+    statut: false,
   })
-    .then(user => {
+    .then((user) => {
       if (req.body.roles) {
         Role.findAll({
           where: {
             name: {
-              [Op.or]: req.body.roles
-            }
-          }
-        }).then(roles => {
+              [Op.or]: req.body.roles,
+            },
+          },
+        }).then((roles) => {
           user.setRoles(roles).then(() => {
             res.send({ message: "User was registered successfully!" });
           });
@@ -33,35 +32,39 @@ function create(req, res) {
         });
       }
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({ message: err.message });
     });
 }
 
-
 // Retrieve all user from the database.
 function findAll(req, res) {
   const username = req.query.username;
-  var condition = username ? { username: { [Op.iLike]: `%${username}%` } } : null;
+  var condition = username
+    ? {
+        username: { [Op.iLike]: `%${username}%` },
+        [Op.not]: { id: req.userId },
+      }
+    : null;
   User.findAll({
-    where: condition, include: [
+    where: condition,
+    include: [
       {
         model: Role,
         as: "roles",
         attributes: ["id", "name", "createdAt", "updatedAt"],
         through: {
           attributes: [],
-        }
+        },
       },
     ],
   })
-    .then(data => {
+    .then((data) => {
       res.send(data);
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving users."
+        message: err.message || "Some error occurred while retrieving users.",
       });
     });
 }
@@ -78,22 +81,22 @@ function findOne(req, res) {
         attributes: ["id", "name", "createdAt", "updatedAt"],
         through: {
           attributes: [],
-        }
+        },
       },
     ],
   })
-    .then(data => {
+    .then((data) => {
       if (data) {
         res.send(data);
       } else {
         res.status(404).send({
-          message: `Cannot find User with id=${id}.`
+          message: `Cannot find User with id=${id}.`,
         });
       }
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({
-        message: "Error retrieving User with id=" + id
+        message: "Error retrieving User with id=" + id,
       });
     });
 }
@@ -104,24 +107,24 @@ function update(req, res) {
 
   User.update(req.body, {
     where: {
-      id: id
-    }
+      id: id,
+    },
   })
-    .then(num => {
+    .then((num) => {
       if (num == 1) {
         res.send({
-          message: "User was updated successfully."
+          message: "User was updated successfully.",
         });
       } else {
         res.send({
-          message: `Cannot update User with id=${id}. Maybe User was not found or req.body is empty!`
+          message: `Cannot update User with id=${id}. Maybe User was not found or req.body is empty!`,
         });
       }
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({
         err,
-        message: "Error updating User with id=" + id
+        message: "Error updating User with id=" + id,
       });
     });
 }
@@ -130,60 +133,59 @@ function _delete(req, res) {
   const id = req.params.id;
 
   User.destroy({
-    where: { id: id }
+    where: { id: id },
   })
-    .then(num => {
+    .then((num) => {
       if (num == 1) {
-        addRole(req, res)
+        addRole(req, res);
         res.send({
-          message: "User was deleted successfully!"
+          message: "User was deleted successfully!",
         });
       } else {
         res.send({
-          message: `Cannot delete User with id=${id}. Maybe User was not found!`
+          message: `Cannot delete User with id=${id}. Maybe User was not found!`,
         });
       }
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({
-        message: "Could not delete User with id=" + id
+        message: "Could not delete User with id=" + id,
       });
     });
-};
-
+}
 
 function findAllActive(req, res) {
   User.findAll({ where: { statut: true } })
-    .then(data => {
+    .then((data) => {
       res.send(data);
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving tutorials."
+          err.message || "Some error occurred while retrieving tutorials.",
       });
     });
-};
+}
 
 function addRole(req, res) {
   const id = req.params.id;
   const rolesName = [];
-  
-  req.body.forEach(element =>{
-    rolesName.push(element.name)
+
+  req.body.forEach((element) => {
+    rolesName.push(element.name);
   });
   // res.send(rolesName)
   User.findByPk(id)
-    .then(user => {
+    .then((user) => {
       if (user) {
         if (req.body) {
           Role.findAll({
             where: {
               name: {
-                [Op.or]: rolesName
-              }
-            }
-          }).then(roles => {
+                [Op.or]: rolesName,
+              },
+            },
+          }).then((roles) => {
             // res.send(roles)
             user.setRoles(roles).then(() => {
               res.send({ message: "User was registered successfully! One" });
@@ -197,17 +199,23 @@ function addRole(req, res) {
         }
       } else {
         res.status(404).send({
-          message: `Cannot find User with id=${id}.`
+          message: `Cannot find User with id=${id}.`,
         });
       }
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({
-        message: "Error retrieving User with id=" + id
+        message: "Error retrieving User with id=" + id,
       });
     });
 }
 
-
-module.exports = { create, findAll, findOne, update, _delete, findAllActive, addRole };
-
+module.exports = {
+  create,
+  findAll,
+  findOne,
+  update,
+  _delete,
+  findAllActive,
+  addRole,
+};

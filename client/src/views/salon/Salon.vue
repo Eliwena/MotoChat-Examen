@@ -208,7 +208,7 @@ export default {
                     disabled: salon.count == salon.size,
                   }"
                   @click="
-                    salon.count == salon.size ? '' : setActiveName(salon, index)
+                    salon.count >= salon.size ? '' : setActiveName(salon, index)
                   "
                   class="list-group-item card py-3 m-3 col-12 pb-3 bg-light text-dark"
                 >
@@ -221,6 +221,7 @@ export default {
           </div>
         </div>
       </div>
+
       <div class="col-8">
         <div class="card bg-dark text-white" style="border-radius: 1rem">
           <div class="card-body p-4 text-center">
@@ -230,7 +231,7 @@ export default {
                 class="card py-3 m-3 pb-3 bg-light text-dark"
               >
                 <div>
-                  <span>{{ serviceMessages.text }} </span>
+                  <span>{{ serviceMessages.text }}</span>
                 </div>
                 <div class="text-end me-4">
                   <span

@@ -1,27 +1,24 @@
-module.exports = app => {
-    const users = require("../../controllers/admin/user.controller.js");
+module.exports = (app) => {
+  const users = require("../../controllers/admin/user.controller.js");
 
-    var router = require("express").Router();
+  var router = require("express").Router();
 
-    
-    // Retrieve all Tutorials
-    router.get("/", users.findAll);
+  // Retrieve all Tutorials
+  router.get("/", users.findAll);
 
-    // Retrieve a single Tutorial with id
-    router.get("/:id", users.findOne);
+  // Retrieve a single Tutorial with id
+  router.get("/:id", users.findOne);
 
-    // Update a Tutorial with id
-    router.put("/:id", users.update);
+  // Update a Tutorial with id
+  router.put("/:id", users.update);
 
-    router.put("/:id/role", users.addRole);
+  router.put("/:id/role", users.addRole);
 
-    // Delete a Tutorial with id
-    router.delete("/:id", users._delete);
+  // Delete a Tutorial with id
+  router.delete("/:id", users._delete);
 
+  // Create a new Tutorial
+  // router.delete("/", users.deleteAll);
 
-    // Create a new Tutorial
-    // router.delete("/", users.deleteAll);
-
-    app.use('/admin/users', router);
-  };
-
+  app.use("/admin/users", router);
+};
