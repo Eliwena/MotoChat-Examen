@@ -1,4 +1,4 @@
-module.exports = (app) => {
+module.exports = app => {
   const privateChat = require("../controllers/privateChat.controller.js");
   var router = require("express").Router();
 
@@ -11,10 +11,10 @@ module.exports = (app) => {
   // Retrieve a single PrivateChat with id
   router.get("/:id", privateChat.findOne);
 
-  // Update a PrivateChat with id
-  router.put("/:id", privateChat.update);
+  // // Update a PrivateChat with id
+  // router.put("/:id", privateChat.update);
 
-  // Delete a PrivateChat with id
-  router.delete("/:id", privateChat._delete);
+  // // Delete a PrivateChat with id
+  // router.delete("/:id", privateChat._delete);
   app.use("/privateChat", router);
 };

@@ -1,8 +1,31 @@
-const { db, Message, User } = require("../../models");
+const db = require("../models");
 const Op = db.Sequelize.Op;
+const Message = db.message;
+
+function create(req,res){
+  // const user = User.findOne({where : {id : req.body.createdBy}})
+  // console.lsog(user)
+  const message = {
+     content : req.body.content,
+     senderId : 1,
+     recipientId : 2
+  }
+  Message.create(message)
+  .then(data => {
+      //ajout du message  dans la table message
+      res.send(data);
+  })
+  .catch(err => {
+      res.status(500).send({
+          message:
+          err.message || "Some error occurred while creating the Message."
+      });
+  });
+}
+
 
 // Enregistre un nouveau message dans la base de données
-const create = async (req, res) => {
+const createA = async (req, res) => {
   try {
     const { content, userid } = req.body;
     const username = req.user.username;

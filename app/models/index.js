@@ -24,6 +24,7 @@ db.role = require("../models/role.model.js")(sequelize, Sequelize);
 db.message = require("../models/message.model.js")(sequelize, Sequelize);
 db.salon = require("../models/salon.model.js")(sequelize, Sequelize);
 db.messageSalon = require("../models/messageSalon.model.js")(sequelize, Sequelize);
+db.message = require("../models/message.model.js")(sequelize, Sequelize);
 
 db.role.belongsToMany(db.users, {
   through: "user_roles",
@@ -67,6 +68,19 @@ db.salon.hasMany(db.messageSalon, {
 db.messageSalon.belongsTo(db.salon);
 
 
+db.users.hasMany(db.message, {
+  as: "sender",
+  foreignKey: "senderId",
+});
+
+db.messageSalon.belongsTo(db.users);
+
+db.users.hasMany(db.message, {
+  as: "recipient",
+  foreignKey: "recipientId",
+});
+
+db.messageSalon.belongsTo(db.users);
 
 db.ROLES = ["user", "admin"];
 
