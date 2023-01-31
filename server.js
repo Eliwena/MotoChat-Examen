@@ -6,6 +6,9 @@ const Role = db.role;
 const app = express();
 const MessageSalon = db.messageSalon;
 const User = db.users;
+// const SSEClient = require('./app/SSE/SSEClient');
+const SSEManager = require('./app/SSE/SSEManager');
+
 var corsOptions = {
   // origin: "http://localhost:8080/",
   AccessControlAllowOrigin: '*'
@@ -40,12 +43,84 @@ require("./app/routes/privateChat.routes")(app);
 //   res.send("404 URL NOT FOUND");
 // });
 
+const sseManager = new SSEManager();
+app.set('sseManager', sseManager);
+
+app.get('/reduction_jour',async(req,res)=>{
+  const sseManager = req.app.get('sseManager');
+ 
+  /* Notre route étant publique nous n'avons pas l'identité de l'utilisateur,
+     nous générons donc un identifiant aléatoirement
+   */
+  const id = Math.random().toString(36).substring(7);
+ 
+  /* On ouvre la connexion avec notre client */
+  sseManager.open(id, res);
+  /* On envoie le nombre de clients connectés à l'ensemble des clients */
+  sseManager.broadcast({
+    id: Date.now(),
+    type: 'message_reduction',
+    data: 'Une reduction de 50% sur les produits de la journée'
+  });
+
+  req.on('close', () => {
+    /* En cas de deconnexion on supprime le client de notre manager */
+        sseManager.delete(id);
+      });
+})
+
+app.get('/nous_contacter',async(req,res)=>{
+  const sseManager = req.app.get('sseManager');
+ 
+  /* Notre route étant publique nous n'avons pas l'identité de l'utilisateur,
+     nous générons donc un identifiant aléatoirement
+   */
+  const id = Math.random().toString(36).substring(7);
+ 
+  /* On ouvre la connexion avec notre client */
+  sseManager.open(id, res);
+  /* On envoie le nombre de clients connectés à l'ensemble des clients */
+  sseManager.broadcast({
+    id: Date.now(),
+    type: 'message_contact',
+    data: 'N\'hésitez pas à nous contacter pour plus d\'informations'
+  });
+
+  req.on('close', () => {
+    /* En cas de deconnexion on supprime le client de notre manager */
+        sseManager.delete(id);
+      });
+})
+
+app.get('/maintenance',async(req,res)=>{
+  const sseManager = req.app.get('sseManager');
+ 
+  /* Notre route étant publique nous n'avons pas l'identité de l'utilisateur,
+     nous générons donc un identifiant aléatoirement
+   */
+  const id = Math.random().toString(36).substring(7);
+ 
+  /* On ouvre la connexion avec notre client */
+  sseManager.open(id, res);
+  /* On envoie le nombre de clients connectés à l'ensemble des clients */
+  sseManager.broadcast({
+    id: Date.now(),
+    type: 'message_maintenance',
+    data: 'Le site sera bientot en maintenance !'
+  });
+
+  req.on('close', () => {
+    /* En cas de deconnexion on supprime le client de notre manager */
+        sseManager.delete(id);
+      });
+})
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8000;
 const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
+
 
 const io = require("socket.io")(server, {
   cors: {
@@ -182,6 +257,9 @@ io.on("connection", (socket) => {
     })
 
 });
+
+
+
 
 
 function initial() {

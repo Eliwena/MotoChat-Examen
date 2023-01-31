@@ -19,6 +19,8 @@ import Login from "./views/Login.vue";
 import Register from "./views/Register.vue";
 import { moment } from "vue-moment";
 import PrivateChat from "./views/PrivateChatView.vue";
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
 library.add(faHome, faUser, faUserPlus, faSignInAlt, faSignOutAlt);
 
 // Vue.config.productionTip = false;
@@ -100,6 +102,7 @@ app.use(router);
 app.use(store);
 app.use(moment);
 // app.use(VeeValidate)
+app.use(Toast);
 app.component("font-awesome-icon", FontAwesomeIcon);
 
 app.mount("#app");
