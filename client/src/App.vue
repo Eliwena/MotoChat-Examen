@@ -1,6 +1,8 @@
 <script>
 import NavBar from "./components/NavBar.vue";
 import { useToast } from "vue-toastification";
+import Chatbot from './views/Chatbot.vue'
+import Modal from './components/Modal.vue'
 
 export default {
   computed: {
@@ -10,11 +12,14 @@ export default {
   },
   components: {
     NavBar,
+    Chatbot,
+    Modal
   },
   data() {
     return {
       
       content: "",
+      showModal: false
     };
   },
   watch: {
@@ -33,7 +38,6 @@ export default {
     const maintenanceSource = new EventSource("http://localhost:8000/maintenance")
 
       factSource.addEventListener("message_reduction", (event) => {
-        console.log("Message", event.data);
         this.toast.info(event.data, {
           position: "top-right",
           timeout: 10000,
@@ -51,7 +55,6 @@ export default {
       });
     
       contactSource.addEventListener("message_contact", (event) => {
-        console.log("Message", event.data);
         this.toast.success(event.data, {
           position: "top-right",
           timeout: 10000,
@@ -69,7 +72,6 @@ export default {
       });
 
       maintenanceSource.addEventListener("message_maintenance", (event) => {
-        console.log("Message", event.data);
         this.toast.warning(event.data, {
           position: "top-right",
           timeout: 10000,
@@ -89,7 +91,6 @@ export default {
   },
   
 };
-
 </script>
 
 <template>
@@ -97,6 +98,14 @@ export default {
     <NavBar></NavBar>
     <section class="vh-100 gradient-custom">
       <router-view />
+      <div>
+        <button @click="showModal = !showModal" class="floating-btn">
+          <img src="@/assets/bot.png" alt="bot" width="40" height="40">
+        </button>
+        <Modal v-if="showModal" @close="showModal = false">
+          <Chatbot />
+        </Modal>
+      </div>
     </section>
   </div>
 </template>
@@ -105,7 +114,6 @@ export default {
 #app {
   text-align: center;
   color: #2c3e50;
-  /* margin-top: 60px; */
 }
 
 body {
@@ -126,5 +134,21 @@ body {
   background: linear-gradient(to right,
       rgba(106, 17, 203, 1),
       rgba(37, 117, 252, 1));
+}
+
+.floating-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+  background: #ffffff;
+  padding: 10px;
+  border-radius: 50px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.floating-btn:hover {
+  background: rgb(241, 241, 241);
 }
 </style>

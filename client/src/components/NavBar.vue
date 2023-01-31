@@ -5,7 +5,6 @@ export default {
       return this.$store.state.auth.user;
     },
     showAdminBoard() {
-      console.log(this.currentUser);
       if (this.currentUser && this.currentUser.roles) {
         return this.currentUser.roles.includes("ROLE_ADMIN");
       }

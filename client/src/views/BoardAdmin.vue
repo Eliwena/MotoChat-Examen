@@ -20,7 +20,6 @@ export default {
 
       eventSource.addEventListener('open', () => console.log('connected'));
       eventSource.onerror = event => {
-        console.log(event);
         if (eventSource.readyState === EventSource.CLOSED) {
           console.log('closed')
           /* Traitement en cas de perte de connexion définitif avec le serveur */

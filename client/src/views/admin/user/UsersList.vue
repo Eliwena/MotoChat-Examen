@@ -1,6 +1,5 @@
 <script>
 import UserDataService from "../../../services/admin/UserDataService";
-console.log(UserDataService);
 export default {
   name: "users-list",
   data() {
@@ -17,7 +16,6 @@ export default {
       UserDataService.getAll()
         .then((response) => {
           this.users = response.data;
-          console.log(response.data);
         })
         .catch((e) => {
           console.log(e);
@@ -38,7 +36,6 @@ export default {
     searchUsername() {
       UserDataService.findByUsername(this.username)
         .then((response) => {
-          //console.log(response.data);
           this.users = response.data;
           this.setActiveUsername(null);
         })

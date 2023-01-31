@@ -3,7 +3,6 @@ import authHeader from "./Auth-header";
 
 class UserListDataService {
   getAll() {
-    console.log("dans le service UserListDataService.js");
     return http.get("/users", { headers: authHeader() });
   }
 

@@ -31,14 +31,12 @@ export default {
       this.userTyping = "";
     });
     this.retrieveUsers();
-    console.log(this.users);
   },
   methods: {
     retrieveUsers() {
       UserListDataService.getAll()
         .then((response) => {
           this.users = response.data;
-          //console.log(response.data);
         })
         .catch((e) => {
           console.log(e);
@@ -60,7 +58,6 @@ export default {
       if (this.currentChat) {
         this.chats.forEach((element) => {
           if (element.name == this.currentChat.name) {
-            console.log(element);
             element.count = element.count - 1;
           }
         });
@@ -81,7 +78,6 @@ export default {
     },
 
     sendMessage(e) {
-      console.log("send message");
       e.preventDefault();
       const message = {
         userid: this.currentUser.id,

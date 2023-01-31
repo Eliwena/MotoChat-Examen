@@ -14,7 +14,6 @@ export default {
             AdminSalonDataService.get(id)
                 .then(response => {
                     this.currentSalon = response.data;
-                    console.log(response.data);
                 })
                 .catch(e => {
                     console.log(e);
@@ -32,7 +31,6 @@ export default {
                 .catch(e => {
                     console.log(e);
                 });
-            console.log(this.currentSalon.roles);
             
         },
 

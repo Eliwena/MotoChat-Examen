@@ -74,7 +74,6 @@ export default {
       };
       AuthService.login(data)
         .then(response => {
-          console.log(response.data);
           this.submitted = true;
           this.$store.dispatch('auth/login', this.user).then(
             () => {

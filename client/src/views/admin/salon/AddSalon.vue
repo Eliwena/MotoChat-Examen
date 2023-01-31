@@ -31,7 +31,6 @@ export default {
             AdminSalonDataService.create(data)
                 .then(response => {
                     this.salon.id = response.data.id;
-                    console.log(response.data);
                     this.submitted = true;
                     this.$router.push("/admin/salon");
                 })

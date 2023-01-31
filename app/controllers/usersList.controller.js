@@ -64,7 +64,6 @@ function findOne(req, res) {
 }
 
 function findAllActive(req, res) {
-  console.log("dans le controller UserListController.js");
   User.findAll({ where: { statut: true } })
     .then((data) => {
       res.send(data);
