@@ -582,7 +582,7 @@ function initial() {
 
   User.create({
     id: 1,
-    username: "User1",
+    username: "User",
     email: "user@email.com",
     password: bcrypt.hashSync("user", 8),
     roleId: 1,
