@@ -73,7 +73,7 @@ export default {
         password: this.user.password,
       };
       AuthService.login(data)
-        .then(response => {
+        .then(() => {
           this.submitted = true;
           this.$store.dispatch('auth/login', this.user).then(
             () => {

@@ -19,7 +19,7 @@ export default {
       const eventSource=  new EventSource("http://localhost:8000/"+event)
 
       eventSource.addEventListener('open', () => console.log('connected'));
-      eventSource.onerror = event => {
+      eventSource.onerror = () => {
         if (eventSource.readyState === EventSource.CLOSED) {
           console.log('closed')
           /* Traitement en cas de perte de connexion définitif avec le serveur */
