@@ -6,6 +6,9 @@ const Role = db.role;
 const app = express();
 const MessageSalon = db.messageSalon;
 const User = db.users;
+const Salon = db.salon;
+var bcrypt = require("bcryptjs");
+
 // const SSEClient = require('./app/SSE/SSEClient');
 const SSEManager = require('./app/SSE/SSEManager');
 
@@ -576,4 +579,92 @@ function initial() {
     id: 2,
     name: "admin",
   });
+
+  User.create({
+    id: 1,
+    username: "User",
+    email: "user@email.com",
+    password: bcrypt.hashSync("user", 8),
+    roleId: 1,
+  }).then(user => {
+      user.setRoles([1])
+  }).catch(err => {
+    console.log(err)
+});
+
+  User.create({
+    id:2,
+    username: "Admin",
+    email: "admin@email.com",
+    password: bcrypt.hashSync("admin", 8),
+    roleId: 1,
+  }).then(user => {
+      user.setRoles([1])
+      user.setRoles([2])
+  }).catch(err => {
+      console.log(err)
+  })
+
+  Salon.create({
+    id: 1,
+    name: "Les meilleurs moto 2022 !",
+    size:20,
+    statut: true,
+    userId:2,
+  });
+
+  Salon.create({
+    id: 2,
+    name: "Les pires motos de tous les temps",
+    size:5,
+    statut: true,
+    userId:2,
+  });
+
+  Salon.create({
+    id: 3,
+    name: "Combat de moto virtuel, a vos claviers !",
+    size:2,
+    statut: true,
+    userId:2,
+  });
+
+  MessageSalon.create({
+    id: 1,
+    statut: true,
+    content: "Salut les gars, je suis nouveau ici !",
+    userId:1,
+    createdAt: new Date('2023-02-01 17:27:58.72+00'),
+    salonId:1,
+  });
+
+  MessageSalon.create({
+    id: 2,
+    statut: true,
+    content: "Salut, bienvenue !",
+    createdAt: new Date('2023-02-01 17:27:59.72+00'),
+        userId:2,
+    salonId:1,
+  });
+
+  MessageSalon.create({
+    id: 3,
+    statut: true,
+    content: "Comment vous allez ?",
+    createdAt: new Date('2023-02-01 17:28:00.72+00'),
+        userId:1,
+    salonId:1,
+  });
+
+  MessageSalon.create({
+    id: 4,
+    statut: true,
+    content: "Bien et toi ?",
+    createdAt: new Date('2023-02-01 17:28:58.72+00'),
+        userId:2,
+    salonId:1,
+  });
+
+    
+
 }
